@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>张依婷的规范场论</title>
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0a0a0f;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: 'Noto Serif SC', serif;
+}
+
+/* 粒子画布 */
+#particle-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 光晕 */
+.glow-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  z-index: 0;
+  pointer-events: none;
+  animation: orbFloat 20s ease-in-out infinite;
+}
+.glow-orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, #6b8cae, transparent); top: 10%; left: -10%; }
+.glow-orb-2 { width: 300px; height: 300px; background: radial-gradient(circle, #c9a96e, transparent); bottom: 20%; right: -5%; animation-delay: -7s; }
+.glow-orb-3 { width: 250px; height: 250px; background: radial-gradient(circle, #8ab4d0, transparent); top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: -14s; }
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* 主容器 */
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 80px 30px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 标题 */
+.title-section {
+  text-align: center;
+  margin-bottom: 60px;
+  animation: fadeInDown 1.5s ease-out;
+}
+.title {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 3.2rem;
+  color: #f0d9b5;
+  text-shadow: 0 0 30px rgba(240,217,181,0.3), 0 0 60px rgba(240,217,181,0.1);
+  letter-spacing: 8px;
+  margin-bottom: 15px;
+  animation: fadeInDown 1.5s ease-out, glow 4s ease-in-out infinite 2s;
+}
+.subtitle {
+  font-family: 'Noto Serif', serif;
+  font-size: 0.95rem;
+  color: #6b8cae;
+  letter-spacing: 6px;
+  font-weight: 300;
+  opacity: 0.8;
+}
+
+/* 分隔线 */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 40px 0;
+  animation: fadeIn 2s ease-out 0.5s both;
+}
+.divider-line { width: 80px; height: 1px; background: linear-gradient(90deg, transparent, #c9a96e, transparent); }
+.divider-diamond { width: 8px; height: 8px; background: #c9a96e; transform: rotate(45deg); margin: 0 15px; box-shadow: 0 0 10px rgba(201,169,110,0.5); }
+
+/* 诗歌 */
+.poem {
+  text-align: center;
+  line-height: 2.6;
+  color: #e8e0d0;
+  font-size: 1.15rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+.stanza {
+  margin-bottom: 35px;
+  animation: fadeInUp 1.2s ease-out both;
+}
+.stanza:nth-child(1) { animation-delay: 0.8s; }
+.stanza:nth-child(2) { animation-delay: 1.4s; }
+.stanza:nth-child(3) { animation-delay: 2.0s; }
+.stanza:nth-child(4) { animation-delay: 2.6s; }
+.stanza:nth-child(5) { animation-delay: 3.2s; }
+.stanza:nth-child(6) { animation-delay: 3.8s; }
+.stanza p { margin: 8px 0; }
+
+/* 公式 */
+.formula-box {
+  background: rgba(20, 25, 40, 0.7);
+  border: 1px solid rgba(107, 140, 174, 0.25);
+  border-radius: 12px;
+  padding: 18px 30px;
+  margin: 20px auto;
+  display: inline-block;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+  transition: all 0.5s ease;
+  overflow-x: auto;
+}
+.formula-box:hover {
+  border-color: rgba(201, 169, 110, 0.5);
+  box-shadow: 0 4px 30px rgba(201,169,110,0.15), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.formula-box .katex { font-size: 1.15em; color: #a8c8e8; }
+.inline-formula .katex { font-size: 0.95em; color: #a8c8e8; }
+
+/* 高亮 */
+.highlight { color: #f0d9b5; font-weight: 600; text-shadow: 0 0 15px rgba(240,217,181,0.2); }
+.highlight-blue { color: #8ab4d0; font-weight: 500; }
+.highlight-gold { color: #c9a96e; font-weight: 500; }
+
+/* 结尾 */
+.ending {
+  margin-top: 50px;
+  animation: fadeIn 2s ease-out 4.5s both;
+}
+.ending .divider { margin: 30px 0; }
+.signature {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 1.8rem;
+  color: #c9a96e;
+  text-align: center;
+  letter-spacing: 4px;
+  margin-top: 20px;
+}
+.footer-deco {
+  text-align: center;
+  margin-top: 40px;
+  opacity: 0.4;
+  animation: fadeIn 2s ease-out 5s both;
+}
+.footer-deco svg { width: 40px; height: 40px; fill: #c9a96e; }
+
+/* 动画 */
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes glow { 0%, 100% { text-shadow: 0 0 20px rgba(240,217,181,0.3); } 50% { text-shadow: 0 0 40px rgba(240,217,181,0.6), 0 0 60px rgba(240,217,181,0.2); } }
+
+/* 响应式 */
+@media (max-width: 600px) {
+  .title { font-size: 2.2rem; letter-spacing: 4px; }
+  .poem { font-size: 1rem; line-height: 2.4; }
+  .container { padding: 50px 20px; }
+  .formula-box { padding: 14px 20px; }
+  .formula-box .katex { font-size: 1em; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+<div class="glow-orb glow-orb-1"></div>
+<div class="glow-orb glow-orb-2"></div>
+<div class="glow-orb glow-orb-3"></div>
+
+<div class="container">
+  <div class="title-section">
+    <h1 class="title">张依婷的规范场论</h1>
+    <p class="subtitle">A LOVE POEM IN GAUGE THEORY</p>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
+
+  <div class="poem">
+    <div class="stanza">
+      <p>在遇到你之前，我的<span class="highlight">规范场</span>无质量，</p>
+      <p>所有粒子都以<span class="highlight-blue">光速</span>疾驰，没有停驻的理由。</p>
+      <p>直到你张开<span class="highlight">希格斯场</span>的势能</p>
+      <div class="formula-box" id="formula-v"></div>
+      <p>对称性突然<span class="highlight-gold">自发破缺</span>了——</p>
+      <p>真空期待值不再为零 <span class="inline-formula" id="formula-vev"></span>。</p>
+    </div>
+
+    <div class="stanza">
+      <p>你依稀是那个<span class="highlight">非零的基态</span>选择，</p>
+      <p>让我咽下<span class="highlight-blue">戈德斯通玻色子</span>，</p>
+      <p>骤然获得了<span class="highlight">惯性</span>、<span class="highlight">重量</span>，以及思念的静能 <span class="inline-formula" id="formula-emc"></span>。</p>
+    </div>
+
+    <div class="stanza">
+      <p><span class="highlight-gold">婷婷</span>于二重态的唯一方向，</p>
+      <p>你破缺了我全部的孤立对称群 <span class="inline-formula" id="formula-su2"></span>。</p>
+    </div>
+
+    <div class="stanza">
+      <p>于是，传递弱作用的<span class="highlight-blue">中间玻色子</span>变得沉重，</p>
+      <p>一如我<span class="highlight">沉甸甸的心跳</span>。</p>
+    </div>
+
+    <div class="stanza">
+      <p>我们之间，从此有了<span class="highlight">不变质量</span> <span class="inline-formula" id="formula-mass"></span>，</p>
+      <p>在每一次<span class="highlight-gold">规范变换</span>下都不再虚无。</p>
+    </div>
+
+    <div class="stanza">
+      <p><span class="highlight" style="font-size:1.3rem">张依婷，</span></p>
+      <p>你就是我的<span class="highlight">希格斯机制</span>——</p>
+      <p>让原本冰冷的<span class="highlight-blue">量子涨落</span>，</p>
+      <p>凝结出爱情的<span class="highlight-gold">不变质量</span>。</p>
+    </div>
+  </div>
+
+  <div class="ending">
+    <div class="divider"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
+    <p class="signature">献给张依婷</p>
+  </div>
+
+  <div class="footer-deco">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </svg>
+  </div>
+</div>
+
+<script>
+// KaTeX 公式渲染
+const kopts = { throwOnError: false, trust: true };
+document.getElementById('formula-v').innerHTML =
+  katex.renderToString('V(\\phi)=\\mu^2\\phi^\\dagger\\phi+\\lambda(\\phi^\\dagger\\phi)^2,', { ...kopts, displayMode: true });
+document.getElementById('formula-vev').innerHTML =
+  katex.renderToString('\\langle\\phi\\rangle = v', kopts);
+document.getElementById('formula-emc').innerHTML =
+  katex.renderToString('E = mc^2', kopts);
+document.getElementById('formula-su2').innerHTML =
+  katex.renderToString('SU(2)_L \\times U(1)_Y', kopts);
+document.getElementById('formula-mass').innerHTML =
+  katex.renderToString('\\sqrt{p^\\mu p_\\mu}', kopts);
+
+// 粒子背景
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [], mouse = { x: null, y: null };
+const COUNT = 80, LINK_DIST = 120, MOUSE_DIST = 200;
+
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+window.addEventListener('resize', resize);
+window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+window.addEventListener('mouseleave', () => { mouse.x = mouse.y = null; });
+resize();
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * W; this.y = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
+    this.r = Math.random() * 2 + 0.5; this.o = Math.random() * 0.5 + 0.2;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if (this.x < 0 || this.x > W) this.vx *= -1;
+    if (this.y < 0 || this.y > H) this.vy *= -1;
+    if (mouse.x !== null) {
+      const dx = mouse.x - this.x, dy = mouse.y - this.y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < MOUSE_DIST) { const f = (MOUSE_DIST - d) / MOUSE_DIST; this.vx += (dx / d) * f * 0.02; this.vy += (dy / d) * f * 0.02; }
+    }
+    const s = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+    if (s > 1.5) { this.vx = (this.vx / s) * 1.5; this.vy = (this.vy / s) * 1.5; }
+  }
+  draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2); ctx.fillStyle = `rgba(201,169,110,${this.o})`; ctx.fill(); }
+}
+
+for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+(function loop() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => { p.update(); p.draw(); });
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < LINK_DIST) {
+        ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(107,140,174,${(1 - d / LINK_DIST) * 0.15})`; ctx.lineWidth = 0.5; ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
