@@ -161,19 +161,19 @@ body {
 
 /* Formula Box */
 .formula-box {
-  background: rgba(8, 10, 20, 0.8);
-  border: 1px solid rgba(122, 175, 219, 0.2);
-  border-radius: 10px; padding: 16px 28px; margin: 14px auto;
-  display: inline-block; backdrop-filter: blur(10px);
-  box-shadow: 0 2px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03);
-  transition: all 0.5s ease; overflow-x: auto;
+  background: transparent;
+  border: none;
+  border-radius: 0; padding: 6px 0; margin: 10px auto;
+  display: inline-block; overflow-x: auto;
+  box-shadow: none;
+  transition: none;
 }
 .formula-box:hover {
-  border-color: rgba(212, 168, 83, 0.4);
-  box-shadow: 0 2px 24px rgba(212,168,83,0.12), 0 2px 16px rgba(0,0,0,0.3);
+  border-color: none;
+  box-shadow: none;
 }
-.formula-box .katex { font-size: 1.12em; color: #a0c4e0; }
-.inline-formula .katex { font-size: 0.92em; color: #a0c4e0; }
+.formula-box .katex { font-size: 1.08em; color: #b8cfe0; }
+.inline-formula .katex { font-size: 0.92em; color: #b8cfe0; }
 
 /* Tooltip */
 .term-tooltip {
@@ -196,31 +196,30 @@ body {
   transition: opacity 1.5s ease, transform 1.5s ease;
 }
 .climax-section.visible { opacity: 1; transform: translateY(0); }
-.climax-name {
-  font-family: 'Ma Shan Zheng', cursive;
-  font-size: clamp(2rem, 5vw, 3rem); color: var(--accent-rose);
-  text-shadow: 0 0 30px rgba(201,122,138,0.35); margin-bottom: 20px;
+.climax-star {
+  font-size: 3rem; margin-bottom: 20px;
   animation: climaxPulse 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(212,168,83,0.4));
 }
 @keyframes climaxPulse {
-  0%, 100% { text-shadow: 0 0 25px rgba(201,122,138,0.3); }
-  50% { text-shadow: 0 0 50px rgba(201,122,138,0.6), 0 0 80px rgba(201,122,138,0.2); }
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(212,168,83,0.3)); }
+  50% { filter: drop-shadow(0 0 50px rgba(212,168,83,0.7)) drop-shadow(0 0 80px rgba(212,168,83,0.25)); }
 }
 .climax-line { font-size: 1.2rem; line-height: 2.5; color: var(--text-secondary); }
-.heart-btn {
+.star-btn {
   margin-top: 36px; padding: 14px 40px;
-  background: transparent; border: 1px solid rgba(201,122,138,0.4);
-  border-radius: 50px; color: var(--accent-rose);
+  background: transparent; border: 1px solid rgba(212,168,83,0.4);
+  border-radius: 50px; color: var(--accent-gold);
   font-family: 'Noto Serif SC', serif; font-size: 1rem; letter-spacing: 3px;
   cursor: pointer; transition: all 0.4s ease;
   backdrop-filter: blur(10px);
 }
-.heart-btn:hover {
-  background: rgba(201,122,138,0.12); border-color: var(--accent-rose);
-  box-shadow: 0 0 30px rgba(201,122,138,0.2); transform: scale(1.03);
+.star-btn:hover {
+  background: rgba(212,168,83,0.12); border-color: var(--accent-gold);
+  box-shadow: 0 0 30px rgba(212,168,83,0.25); transform: scale(1.03);
 }
-.heart-btn.hearted {
-  border-color: var(--accent-rose); background: rgba(201,122,138,0.18);
+.star-btn.triggered {
+  border-color: var(--accent-gold); background: rgba(212,168,83,0.18);
   pointer-events: none;
 }
 
@@ -399,11 +398,11 @@ body {
     </div>
   </div>
 
-  <!-- Heart Button -->
+  <!-- Star Button -->
   <div class="climax-section" id="climax-section">
-    <div class="climax-name">&starf;</div>
-    <p class="climax-line">点击下方 &middot; 让粒子凝聚为心</p>
-    <button class="heart-btn" id="heart-btn" onclick="triggerHeart()">&hearts; 对称性破缺 &hearts;</button>
+    <div class="climax-star">★</div>
+    <p class="climax-line">点击下方 &middot; 让粒子凝聚为星</p>
+    <button class="star-btn" id="star-btn" onclick="triggerStar()">★ 对称性破缺 ★</button>
   </div>
 
   <!-- Signature -->
@@ -527,7 +526,7 @@ var canvas = document.getElementById('particle-canvas');
 var ctx = canvas.getContext('2d');
 var W, H, particles = [], mouse = { x: null, y: null };
 var COUNT = 100, LINK_DIST = 130, MOUSE_DIST = 180;
-var heartMode = false, heartProgress = 0;
+var starMode = false, starProgress = 0;
 
 function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize);
@@ -551,16 +550,30 @@ function Particle() {
   this.reset();
 
   this.update = function() {
-    if (heartMode) {
-      var t = this.angle + heartProgress * this.orbitSpeed * 100;
+    if (starMode) {
+      var t = this.angle + starProgress * this.orbitSpeed * 100;
       var scale = this.orbitR / 16;
-      var hx = 16 * Math.pow(Math.sin(t), 3);
-      var hy = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-      var targetX = W/2 + hx * scale * 0.8;
-      var targetY = H/2 + hy * scale * 0.8;
+      var segment = Math.floor(t / (Math.PI * 2 / 5)) % 5;
+      var frac = (t % (Math.PI * 2 / 5)) / (Math.PI * 2 / 5);
+      var outerAngle = segment * Math.PI * 2 / 5 - Math.PI / 2;
+      var innerAngle = outerAngle + Math.PI / 5;
+      var outerR = scale, innerR = scale * 0.38;
+      var sx, sy;
+      if (frac < 0.5) {
+        var f = frac * 2;
+        sx = Math.cos(outerAngle) * outerR * (1-f) + Math.cos(innerAngle) * innerR * f;
+        sy = Math.sin(outerAngle) * outerR * (1-f) + Math.sin(innerAngle) * innerR * f;
+      } else {
+        var f2 = (frac - 0.5) * 2;
+        var nextOuter = ((segment + 1) % 5) * Math.PI * 2 / 5 - Math.PI / 2;
+        sx = Math.cos(innerAngle) * innerR * (1-f2) + Math.cos(nextOuter) * outerR * f2;
+        sy = Math.sin(innerAngle) * innerR * (1-f2) + Math.sin(nextOuter) * outerR * f2;
+      }
+      var targetX = W/2 + sx;
+      var targetY = H/2 + sy;
       this.x += (targetX - this.x) * 0.03;
       this.y += (targetY - this.y) * 0.03;
-      this.r = this.baseR * (0.7 + 0.3 * heartProgress);
+      this.r = this.baseR * (0.7 + 0.3 * starProgress);
       this.o = Math.min(1, this.o + 0.002);
     } else {
       this.x += this.vx;
@@ -580,7 +593,7 @@ function Particle() {
   this.draw = function() {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
-    var color = heartMode ? 'rgba(201,122,138,' + this.o + ')' : 'rgba(212,168,83,' + this.o + ')';
+    var color = starMode ? 'rgba(212,168,83,' + this.o + ')' : 'rgba(212,168,83,' + this.o + ')';
     ctx.fillStyle = color;
     ctx.fill();
   };
@@ -595,29 +608,29 @@ for (var i = 0; i < COUNT; i++) particles.push(new Particle());
     for (var j = i+1; j < particles.length; j++) {
       var dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
       var d = Math.sqrt(dx*dx + dy*dy);
-      var maxDist = heartMode ? LINK_DIST * 1.5 : LINK_DIST;
+      var maxDist = starMode ? LINK_DIST * 1.5 : LINK_DIST;
       if (d < maxDist) {
         ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-        var alpha = (1 - d/maxDist) * (heartMode ? 0.2 : 0.12);
-        var color = heartMode ? 'rgba(201,122,138,' + alpha + ')' : 'rgba(122,175,219,' + alpha + ')';
+        var alpha = (1 - d/maxDist) * (starMode ? 0.22 : 0.12);
+        var color = starMode ? 'rgba(212,168,83,' + alpha + ')' : 'rgba(122,175,219,' + alpha + ')';
         ctx.strokeStyle = color; ctx.lineWidth = 0.5; ctx.stroke();
       }
     }
   }
-  if (heartMode && heartProgress < 1) heartProgress += 0.005;
+  if (starMode && starProgress < 1) starProgress += 0.005;
   requestAnimationFrame(loop);
 })();
 
-// Heart Trigger
-var heartActive = false;
-function triggerHeart() {
-  if (heartActive) return;
-  heartActive = true;
-  heartMode = true;
-  heartProgress = 0;
-  var btn = document.getElementById('heart-btn');
-  btn.classList.add('hearted');
-  btn.innerHTML = '&hearts; 爱是不变质量 &hearts;';
+// Star Trigger
+var starActive = false;
+function triggerStar() {
+  if (starActive) return;
+  starActive = true;
+  starMode = true;
+  starProgress = 0;
+  var btn = document.getElementById('star-btn');
+  btn.classList.add('triggered');
+  btn.innerHTML = '\u2605 爱是不变质量 \u2605';
 
   document.querySelectorAll('.glow-orb').forEach(function(orb) {
     orb.style.opacity = '0.22';
@@ -629,7 +642,7 @@ function triggerHeart() {
     });
   }, 3000);
 
-  showToast('对称性已破缺 \u00b7 粒子凝聚为心');
+  showToast('对称性已破缺 \u00b7 粒子凝聚为星 \u2605');
 }
 
 // Copy Poem
