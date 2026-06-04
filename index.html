@@ -44,7 +44,7 @@ canvas {
   width: 100%; height: 100%;
   pointer-events: none;
 }
-#particle-canvas { z-index: 0; }
+#particle-canvas { position: fixed; top: 0; left: 0; z-index: 0; pointer-events: none; }
 
 
 /* ── Progress Bar ── */
@@ -363,30 +363,65 @@ var PW, PH, particles = [];
 function pResize() { PW = pCanvas.width = window.innerWidth; PH = pCanvas.height = window.innerHeight; }
 
 function ParticleItem() {
-  this.reset = function() {
-    this.x = Math.random()*PW;
-    this.y = PH + 10;
-    this.size = rand(1, 2.8);
-    this.speedY = rand(-0.3, -0.8);
-    this.speedX = rand(-0.15, 0.15);
-    this.opacity = rand(0.12, 0.35);
-    this.wobbleA = rand(0.3, 1);
-    this.wobbleS = rand(0.005, 0.018);
-    this.wobbleO = Math.random()*Math.PI*2;
-    this.life = 0;
+  var self = this;
+  // Pre-compute heart orbit params (fixed per particle)
+  self.heartAngle = Math.random() * Math.PI * 2;
+  self.heartOrbitFactor = 0.2 + Math.random() * 0.8;
+  self.heartSpeed = 0.3 + Math.random() * 0.7;
+
+  self.reset = function() {
+    self.x = Math.random() * PW;
+    self.y = PH + 10;
+    self.size = rand(1, 2.8);
+    self.speedY = rand(-0.3, -0.8);
+    self.speedX = rand(-0.15, 0.15);
+    self.opacity = rand(0.12, 0.35);
+    self.wobbleA = rand(0.3, 1);
+    self.wobbleS = rand(0.005, 0.018);
+    self.wobbleO = Math.random() * Math.PI * 2;
+    self.life = 0;
   };
-  this.reset();
-  this.update = function() {
-    this.life++;
-    this.x += this.speedX + Math.sin(this.life*this.wobbleS+this.wobbleO)*this.wobbleA*0.08;
-    this.y += this.speedY;
-    if (this.y < -10 || this.x < -10 || this.x > PW+10) this.reset();
+  self.reset();
+
+  self.update = function() {
+    self.life++;
+    if (state.heartActive) {
+      // Heart parametric: x = 16 sin³t,  y = -(13cost - 5cos2t - 2cos3t - cos4t)
+      var t = self.heartAngle + state.heartProgress * self.heartSpeed * 8;
+      var heartScale = Math.min(PW, PH) * 0.016;
+      var r = self.heartOrbitFactor * heartScale;
+      var hx = 16 * Math.pow(Math.sin(t), 3);
+      var hy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+      var tx = PW / 2 + hx * (r / 16);
+      var ty = PH / 2 + hy * (r / 16) - heartScale * 1.5;
+      // Smooth lerp towards heart position
+      self.x += (tx - self.x) * 0.025;
+      self.y += (ty - self.y) * 0.025;
+      self.size = Math.max(1.2, self.size + (2.5 - self.size) * 0.015);
+      self.opacity = Math.min(0.92, self.opacity + 0.003);
+    } else {
+      self.x += self.speedX + Math.sin(self.life * self.wobbleS + self.wobbleO) * self.wobbleA * 0.08;
+      self.y += self.speedY;
+      if (self.y < -10 || self.x < -10 || self.x > PW + 10) self.reset();
+    }
   };
-  this.draw = function(ctx) {
+
+  self.draw = function(ctx) {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-    ctx.fillStyle = 'hsla(340, 55%, 72%, ' + this.opacity + ')';
+    ctx.arc(self.x, self.y, self.size, 0, Math.PI * 2);
+    if (state.heartActive) {
+      ctx.fillStyle = 'hsla(340, 65%, 72%, ' + self.opacity + ')';
+    } else {
+      ctx.fillStyle = 'hsla(340, 55%, 72%, ' + self.opacity + ')';
+    }
     ctx.fill();
+    // Glow halo in heart mode
+    if (state.heartActive && self.opacity > 0.5) {
+      ctx.beginPath();
+      ctx.arc(self.x, self.y, self.size * 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'hsla(340, 60%, 75%, ' + (self.opacity * 0.12) + ')';
+      ctx.fill();
+    }
   };
 }
 
