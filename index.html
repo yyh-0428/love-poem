@@ -45,8 +45,7 @@ canvas {
   pointer-events: none;
 }
 #particle-canvas { z-index: 0; }
-#heart-canvas { z-index: 999; opacity: 1; transition: opacity 0.6s ease; pointer-events: none; }
-#heart-canvas.hidden { opacity: 0; }
+
 
 /* ── Progress Bar ── */
 .progress-bar {
@@ -264,7 +263,7 @@ canvas {
 <body>
 
 <canvas id="particle-canvas"></canvas>
-<canvas id="heart-canvas"></canvas>
+
 
 <!-- Heart Reveal Overlay -->
 <div class="heart-reveal-overlay" id="heart-overlay">
@@ -394,11 +393,7 @@ function ParticleItem() {
 /* ═════════════════════════════════════════════
    Heart Canvas + Constellation
    ═════════════════════════════════════════════ */
-var hCanvas = document.getElementById('heart-canvas');
-var hCtx = hCanvas.getContext('2d');
-var HW, HH;
 
-function hResize() { HW = hCanvas.width = window.innerWidth; HH = hCanvas.height = window.innerHeight; }
 
 function StarItem() {
   this.x = Math.random()*HW;
@@ -489,69 +484,39 @@ function triggerHeart() {
   }, 1400);
 }
 
-/* ═════════════════════════════════════════════
-   Heart Canvas Animation
-   ═════════════════════════════════════════════ */
-(function heartLoop() {
-  if (state.heartActive) {
-    state.heartTime++;
-    hCtx.clearRect(0, 0, HW, HH);
-
-    state.stars.forEach(function(s) {
-      s.opacity = s.baseOp*(0.6+0.4*Math.sin(state.heartTime*s.twinkleS+s.twinkleO));
-      hCtx.beginPath();
-      hCtx.arc(s.x, s.y, s.size, 0, Math.PI*2);
-      hCtx.fillStyle = 'hsla(40, 40%, 88%, ' + s.opacity + ')';
-      hCtx.fill();
-      if (s.constellation && s.opacity > 0.4) {
-        hCtx.beginPath();
-        hCtx.arc(s.x, s.y, s.size*2.5, 0, Math.PI*2);
-        hCtx.fillStyle = 'hsla(340, 50%, 75%, ' + (s.opacity*0.12) + ')';
-        hCtx.fill();
-      }
-    });
-
-    var cs = state.constellationStars;
-    var lineCount = Math.floor(cs.length*Math.min(state.conProgress,1));
-    if (lineCount >= 2) {
-      hCtx.strokeStyle = 'rgba(224,168,192,0.3)';
-      hCtx.lineWidth = 1.2;
-      hCtx.beginPath();
-      hCtx.moveTo(cs[0].x, cs[0].y);
-      for (var i = 1; i < lineCount; i++) hCtx.lineTo(cs[i].x, cs[i].y);
-      if (state.conProgress >= 1 && lineCount >= cs.length) hCtx.lineTo(cs[0].x, cs[0].y);
-      hCtx.stroke();
-      hCtx.strokeStyle = 'rgba(240,212,160,0.1)';
-      hCtx.lineWidth = 4;
-      hCtx.stroke();
-    }
-
-    // Sparkles
-    state.sparkles = state.sparkles.filter(function(sp) { return sp.life < sp.maxLife; });
-    state.sparkles.forEach(function(sp) {
-      sp.life++; sp.x += sp.sx; sp.y += sp.sy;
-      var a = sp.life/sp.maxLife;
-      var alpha = a < 0.3 ? a/0.3 : 1-(a-0.3)/0.7;
-      if (alpha <= 0) return;
-      hCtx.beginPath();
-      hCtx.arc(sp.x, sp.y, sp.size*(1-a*0.5), 0, Math.PI*2);
-      hCtx.fillStyle = 'rgba(240,212,160,' + (alpha*0.7) + ')';
-      hCtx.fill();
-    });
-    if (state.conProgress > 0 && state.heartTime % 5 === 0 && cs.length > 0) {
-      var idx = randInt(0, cs.length-1);
-      state.sparkles.push(new SparkleItem(cs[idx].x, cs[idx].y));
-    }
-  }
-  requestAnimationFrame(heartLoop);
-})();
+/* Heart animation uses the main particle loop — particles converge to heart equation in update() above */
 
 /* ═════════════════════════════════════════════
-   Particle Animation
+   Particle Animation (heart mode uses same canvas)
    ═════════════════════════════════════════════ */
 (function particleLoop() {
   pCtx.clearRect(0, 0, PW, PH);
-  particles.forEach(function(p) { p.update(); p.draw(pCtx); });
+  // Semi-transparent trail in heart mode for smooth motion
+  if (state.heartActive && state.heartProgress < 1) {
+    pCtx.fillStyle = 'rgba(10,8,18,0.12)';
+    pCtx.fillRect(0, 0, PW, PH);
+  }
+  for (var i = 0; i < particles.length; i++) {
+    particles[i].update();
+    particles[i].draw(pCtx);
+    // Heart-mode: draw subtle connecting lines to nearby particles
+    if (state.heartActive && state.heartProgress > 0.3) {
+      for (var j = i+1; j < particles.length; j++) {
+        if (j > i+8) break;
+        var dx = particles[i].x - particles[j].x;
+        var dy = particles[i].y - particles[j].y;
+        var d = Math.sqrt(dx*dx+dy*dy);
+        if (d < 70) {
+          pCtx.beginPath();
+          pCtx.moveTo(particles[i].x, particles[i].y);
+          pCtx.lineTo(particles[j].x, particles[j].y);
+          pCtx.strokeStyle = 'rgba(224,168,192,' + ((1-d/70)*0.15*state.heartProgress) + ')';
+          pCtx.lineWidth = 0.4;
+          pCtx.stroke();
+        }
+      }
+    }
+  }
   requestAnimationFrame(particleLoop);
 })();
 
@@ -564,8 +529,14 @@ var NEWLINE_PAUSE = 100;
 
 function tokenizeHTML(raw) {
   // Parse raw HTML into tokens: 'char' for visible text, 'html' for instant elements
+  // Only replace \n (literal backslash-n) OUTSIDE <katex> blocks to avoid corrupting formulas
+  var parts = raw.split(/(<katex[^>]*>.*?<\/katex>)/g);
+  var processed = parts.map(function(p) {
+    if (/^<katex/.test(p)) return p;
+    return p.replace(/\\n/g, '<tw-br>');
+  }).join('');
   var div = document.createElement('div');
-  div.innerHTML = raw.replace(/\\n/g, '<tw-br>');
+  div.innerHTML = processed;
   var tokens = [];
 
   function walk(node) {
@@ -578,7 +549,8 @@ function tokenizeHTML(raw) {
 
       if (tag === 'katex') {
         // Render KaTeX formula fully at once
-        var formula = node.textContent;
+        // Fix: data-raw stores \\ as double backslash; KaTeX needs single
+        var formula = node.textContent.replace(/\\\\/g, '\\');
         var inline = node.getAttribute('inline') !== null;
         try {
           var rendered = katex.renderToString(formula, { throwOnError: false, displayMode: !inline });
@@ -650,7 +622,9 @@ function typeStanza(stanzaEl) {
       // Final render: replace katex tags and clean up
       var finalHtml = raw.replace(/\\n/g, '').replace(/<katex([^>]*)>(.*?)<\/katex>/g, function(m, attrs, f) {
         var il = attrs.indexOf('inline') >= 0;
-        try { return katex.renderToString(f, { throwOnError: false, displayMode: !il }); }
+        // Fix: double backslash in data-raw → single for KaTeX
+        var formula = f.replace(/\\\\/g, '\\');
+        try { return katex.renderToString(formula, { throwOnError: false, displayMode: !il }); }
         catch(e) { return f; }
       });
       stanzaEl.innerHTML = finalHtml;
