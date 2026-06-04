@@ -8,309 +8,256 @@
 <meta property="og:title" content="张依婷的规范场论">
 <meta property="og:description" content="用希格斯机制、规范变换、自发对称破缺写一首情诗。">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#06060e">
+<meta name="theme-color" content="#0a0812">
 
 <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@200;300;400;600;700;900&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg-deep: #06060e;
-  --bg-card: rgba(15, 18, 32, 0.88);
-  --text-primary: #efe3cf;
-  --text-secondary: #9badc4;
-  --accent-gold: #d4a853;
-  --accent-blue: #7aafdb;
-  --accent-rose: #c97a8a;
-  --glow-gold: rgba(212, 168, 83, 0.35);
-  --glow-blue: rgba(122, 175, 219, 0.25);
-  --border-subtle: rgba(122, 175, 219, 0.15);
+  --rose-gold: #e0a8c0;
+  --rose-light: #f0c8d8;
+  --warm-gold: #f0d4a0;
+  --cream: #f5ede0;
+  --cream-dark: #e8ddd0;
+  --text-dark: #3a2a1a;
+  --text-medium: #5a4530;
+  --lavender: #c4b8e0;
+  --night: #0a0812;
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+
+html { scroll-behavior: smooth; overflow-x: hidden; }
+
 body {
-  background: var(--bg-deep);
-  color: var(--text-primary);
+  background: linear-gradient(180deg, #0a0812 0%, #100d1a 30%, #151022 60%, #100d1a 100%);
+  color: var(--cream);
   font-family: 'Noto Serif SC', serif;
   min-height: 100vh;
   overflow-x: hidden;
-  cursor: default;
+  -webkit-font-smoothing: antialiased;
+  transition: background 3s ease;
 }
 
-/* Progress Bar */
+/* ── Canvas Layers ── */
+canvas {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+#particle-canvas { z-index: 0; }
+#heart-canvas { z-index: 0; opacity: 0; transition: opacity 2s ease; }
+#sparkle-canvas { z-index: 0; }
+
+/* ── Progress Bar ── */
 .progress-bar {
   position: fixed; top: 0; left: 0; height: 2px;
-  background: linear-gradient(90deg, var(--accent-gold), var(--accent-blue), var(--accent-rose));
+  background: linear-gradient(90deg, var(--rose-gold), var(--warm-gold));
   z-index: 100; transition: width 0.1s linear;
-  box-shadow: 0 0 8px var(--glow-gold);
+  box-shadow: 0 0 6px rgba(224, 168, 192, 0.3);
 }
 
-/* Particle Canvas */
-#particle-canvas {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  z-index: 0; pointer-events: none;
-}
-
-/* Glow Orbs */
-.glow-orb {
-  position: fixed; border-radius: 50%; filter: blur(90px);
-  opacity: 0.12; z-index: 0; pointer-events: none;
-  transition: opacity 0.8s ease;
-}
-.glow-orb-1 { width: 450px; height: 450px; background: radial-gradient(circle, #5a7fa0, transparent); top: -5%; left: -8%; animation: orbFloat 24s ease-in-out infinite; }
-.glow-orb-2 { width: 350px; height: 350px; background: radial-gradient(circle, #b8944a, transparent); bottom: -5%; right: -6%; animation: orbFloat 22s ease-in-out infinite -8s; }
-.glow-orb-3 { width: 280px; height: 280px; background: radial-gradient(circle, #5a7fa0, transparent); top: 55%; left: 50%; transform: translate(-50%, -50%); animation: orbFloat 20s ease-in-out infinite -15s; }
-@keyframes orbFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(40px, -35px) scale(1.08); }
-  50% { transform: translate(-25px, 15px) scale(0.94); }
-  75% { transform: translate(-35px, -20px) scale(1.05); }
-}
-
-/* Main Container */
+/* ── Main Container ── */
 .container {
-  position: relative; z-index: 1;
-  max-width: 820px; margin: 0 auto;
-  padding: 100px 30px 60px; min-height: 100vh;
+  position: relative; z-index: 10;
+  max-width: 700px; margin: 0 auto;
+  padding: 120px 30px 80px;
 }
 
-/* Hero */
+/* ── Hero ── */
 .hero {
-  text-align: center; padding: 60px 0 40px;
-  animation: heroReveal 2s ease-out;
+  text-align: center; padding: 40px 0 30px;
+  animation: heroIn 2s ease-out;
 }
-@keyframes heroReveal {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes heroIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 .hero-title {
   font-family: 'Ma Shan Zheng', cursive;
-  font-size: clamp(2.4rem, 6vw, 3.8rem);
-  color: var(--accent-gold);
-  text-shadow: 0 0 40px var(--glow-gold), 0 0 80px rgba(212,168,83,0.15);
-  letter-spacing: 8px; line-height: 1.4;
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  color: var(--warm-gold);
+  text-shadow: 0 0 35px rgba(240, 212, 160, 0.3), 0 0 70px rgba(240, 212, 160, 0.1);
+  letter-spacing: 6px; line-height: 1.5;
   animation: titleGlow 5s ease-in-out infinite 2s;
 }
 @keyframes titleGlow {
-  0%, 100% { text-shadow: 0 0 30px var(--glow-gold), 0 0 60px rgba(212,168,83,0.1); }
-  50% { text-shadow: 0 0 50px var(--glow-gold), 0 0 100px rgba(212,168,83,0.25), 0 0 150px rgba(212,168,83,0.08); }
+  0%, 100% { text-shadow: 0 0 25px rgba(240, 212, 160, 0.25); }
+  50% { text-shadow: 0 0 45px rgba(240, 212, 160, 0.5), 0 0 80px rgba(224, 168, 192, 0.2); }
 }
 .hero-subtitle {
-  font-family: 'Noto Serif', serif;
-  font-size: 0.9rem; color: var(--accent-blue); letter-spacing: 5px;
-  margin-top: 12px; opacity: 0.75; font-weight: 300;
+  font-size: 0.85rem; color: var(--rose-gold); letter-spacing: 5px;
+  margin-top: 10px; opacity: 0.6; font-weight: 300;
 }
 
-/* Feynman Diagram Ornament */
-.feynman-ornament {
-  display: flex; justify-content: center; margin: 50px 0 60px;
-  animation: fadeIn 2.5s ease-out 0.8s both;
+/* ── Paper Container ── */
+.poem-paper {
+  margin-top: 40px; padding: clamp(32px, 5vw, 55px) clamp(24px, 4vw, 45px);
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 30px,
+      rgba(200, 180, 160, 0.04) 30px, rgba(200, 180, 160, 0.04) 31px),
+    linear-gradient(180deg, #faf5ef 0%, #f5ede0 50%, #faf5ef 100%);
+  border-radius: 4px;
+  box-shadow: 0 25px 70px rgba(0,0,0,0.5), 0 0 0 1px rgba(224,168,192,0.12);
+  position: relative;
+  color: var(--text-dark);
+  line-height: 2.4;
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  overflow: hidden;
 }
-.feynman-ornament svg { width: 280px; height: 60px; opacity: 0.5; }
-.feynman-ornament svg line { stroke: var(--accent-blue); stroke-width: 0.8; stroke-dasharray: 4 3; }
-.feynman-ornament svg circle { fill: var(--accent-gold); opacity: 0.7; }
 
-/* Stanzas */
-.stanza-wrapper {
-  margin-bottom: 60px;
-  opacity: 0; transform: translateY(40px);
+.poem-paper::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(224,168,192,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(240,212,160,0.05) 0%, transparent 50%);
+  pointer-events: none; z-index: 1;
+}
+
+/* ── Stanza Text ── */
+.stanza {
+  position: relative; z-index: 2;
+  margin-bottom: 36px; text-align: center;
+  opacity: 0; transform: translateY(24px);
   transition: opacity 1.2s ease-out, transform 1.2s ease-out;
 }
-.stanza-wrapper.visible {
-  opacity: 1; transform: translateY(0);
-}
-.stanza-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px; padding: 32px 36px;
-  backdrop-filter: blur(20px);
-  text-align: center; line-height: 2.5;
-  position: relative; overflow: hidden;
-  box-shadow: 0 4px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
-  transition: border-color 0.6s ease, box-shadow 0.6s ease;
-}
-.stanza-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
-  opacity: 0; transition: opacity 0.8s ease;
-}
-.stanza-wrapper.visible .stanza-card::before { opacity: 0.5; }
-.stanza-card:hover {
-  border-color: rgba(212,168,83,0.3);
-  box-shadow: 0 6px 40px rgba(212,168,83,0.08), 0 4px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
-}
-.stanza-card p { font-size: 1.1rem; font-weight: 300; letter-spacing: 2px; margin: 6px 0; color: var(--text-primary); }
-.stanza-card .stanza-number {
-  font-family: 'Noto Serif', serif; font-size: 0.7rem; color: var(--accent-blue);
-  letter-spacing: 3px; margin-bottom: 10px; opacity: 0.5;
+.stanza.visible { opacity: 1; transform: translateY(0); }
+.stanza p { margin: 4px 0; letter-spacing: 1px; }
+
+.stanza-num {
+  display: block; font-family: 'Noto Serif SC', serif;
+  font-size: 0.65rem; color: var(--rose-gold); opacity: 0.5;
+  letter-spacing: 3px; margin-bottom: 8px;
 }
 
-/* Highlight Styles */
-.hl-gold { color: var(--accent-gold); font-weight: 600; cursor: pointer;
-  text-shadow: 0 0 12px var(--glow-gold);
-  border-bottom: 1px dotted rgba(212,168,83,0.3);
+/* ── Highlighted Terms (keep interactive) ── */
+.hl { cursor: pointer; border-bottom: 1px dotted rgba(180, 130, 100, 0.4);
   transition: all 0.3s ease; position: relative; }
-.hl-gold:hover { text-shadow: 0 0 20px var(--glow-gold), 0 0 40px rgba(212,168,83,0.3);
-  border-bottom-color: var(--accent-gold); }
-.hl-blue { color: var(--accent-blue); font-weight: 500; cursor: pointer;
-  border-bottom: 1px dotted rgba(122,175,219,0.25); transition: all 0.3s ease; }
-.hl-blue:hover { text-shadow: 0 0 15px var(--glow-blue); border-bottom-color: var(--accent-blue); }
-.hl-rose { color: var(--accent-rose); font-weight: 500; }
+.hl-gold { color: #b8860b; font-weight: 600; }
+.hl-blue { color: #6a8faa; font-weight: 500; }
+.hl-rose { color: #b8647a; font-weight: 600; }
+.hl:hover { border-bottom-color: var(--rose-gold); }
 
-/* Formula Box */
-.formula-box {
-  background: transparent;
-  border: none;
-  border-radius: 0; padding: 6px 0; margin: 10px auto;
-  display: inline-block; overflow-x: auto;
-  box-shadow: none;
-  transition: none;
-}
-.formula-box:hover {
-  border-color: none;
-  box-shadow: none;
-}
-.formula-box .katex { font-size: 1.08em; color: #b8cfe0; }
-.inline-formula .katex { font-size: 0.92em; color: #b8cfe0; }
+/* ── Formula (inline, subtle) ── */
+.formula-inline { display: inline; }
+.formula-inline .katex { font-size: 0.9em; color: #6a8faa; }
+.formula-block { display: block; margin: 10px auto; text-align: center; }
+.formula-block .katex { font-size: 1.05em; color: #5a7090; }
 
-/* Tooltip */
-.term-tooltip {
-  position: fixed; z-index: 200; pointer-events: none;
-  background: rgba(20, 24, 40, 0.96); border: 1px solid rgba(212,168,83,0.3);
-  border-radius: 10px; padding: 12px 18px; max-width: 280px;
-  font-size: 0.85rem; line-height: 1.7; color: var(--text-secondary);
-  opacity: 0; transform: translateY(8px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-  backdrop-filter: blur(20px);
-}
-.term-tooltip.active { opacity: 1; transform: translateY(0); }
-.term-tooltip .tt-title { color: var(--accent-gold); font-weight: 600; margin-bottom: 4px; font-size: 0.9rem; }
-
-/* Climax Section */
+/* ── Climax ── */
 .climax-section {
-  text-align: center; padding: 80px 0 40px;
-  opacity: 0; transform: translateY(30px);
-  transition: opacity 1.5s ease, transform 1.5s ease;
+  text-align: center; margin-top: 40px; position: relative; z-index: 2;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 1.5s ease 0.5s, transform 1.5s ease 0.5s;
 }
 .climax-section.visible { opacity: 1; transform: translateY(0); }
-.climax-star {
-  font-size: 3rem; margin-bottom: 20px;
-  animation: climaxPulse 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 20px rgba(212,168,83,0.4));
+.climax-name { font-size: 1.5rem; color: #b8647a; margin-bottom: 16px; letter-spacing: 3px; }
+.climax-hint {
+  font-size: 0.9rem; color: var(--text-medium); opacity: 0.5;
+  margin-bottom: 24px; letter-spacing: 2px; font-family: 'Noto Serif SC', serif;
 }
-@keyframes climaxPulse {
-  0%, 100% { filter: drop-shadow(0 0 20px rgba(212,168,83,0.3)); }
-  50% { filter: drop-shadow(0 0 50px rgba(212,168,83,0.7)) drop-shadow(0 0 80px rgba(212,168,83,0.25)); }
+.heart-btn {
+  padding: 12px 38px; border-radius: 50px;
+  background: transparent; border: 1px solid rgba(184, 100, 122, 0.4);
+  color: #b8647a; font-family: 'Noto Serif SC', serif;
+  font-size: 0.95rem; letter-spacing: 2px; cursor: pointer;
+  transition: all 0.5s ease; position: relative; z-index: 12;
 }
-.climax-line { font-size: 1.2rem; line-height: 2.5; color: var(--text-secondary); }
-.star-btn {
-  margin-top: 36px; padding: 14px 40px;
-  background: transparent; border: 1px solid rgba(212,168,83,0.4);
-  border-radius: 50px; color: var(--accent-gold);
-  font-family: 'Noto Serif SC', serif; font-size: 1rem; letter-spacing: 3px;
-  cursor: pointer; transition: all 0.4s ease;
-  backdrop-filter: blur(10px);
+.heart-btn:hover {
+  background: rgba(184, 100, 122, 0.1); border-color: #b8647a;
+  box-shadow: 0 0 25px rgba(184, 100, 122, 0.2);
 }
-.star-btn:hover {
-  background: rgba(212,168,83,0.12); border-color: var(--accent-gold);
-  box-shadow: 0 0 30px rgba(212,168,83,0.25); transform: scale(1.03);
-}
-.star-btn.triggered {
-  border-color: var(--accent-gold); background: rgba(212,168,83,0.18);
+.heart-btn.triggered {
+  border-color: #b8647a; background: rgba(184, 100, 122, 0.15);
   pointer-events: none;
 }
 
-/* Signature */
+/* ── Signature ── */
 .signature-section {
-  text-align: center; padding: 50px 0 20px;
+  text-align: center; margin-top: 48px; position: relative; z-index: 2;
   opacity: 0; transform: translateY(20px);
-  transition: opacity 1s ease 0.3s, transform 1s ease 0.3s;
+  transition: opacity 1s ease, transform 1s ease;
 }
 .signature-section.visible { opacity: 1; transform: translateY(0); }
-.signature {
-  font-family: 'Ma Shan Zheng', cursive;
-  font-size: 1.8rem; color: var(--accent-gold); letter-spacing: 4px;
+.signature-line {
+  width: 100px; height: 1px; background: linear-gradient(90deg, transparent, var(--rose-gold), transparent);
+  margin: 0 auto 20px;
 }
+.signature { font-size: 1.4rem; color: #b8860b; letter-spacing: 3px; }
 
-/* Footer */
+/* ── Footer ── */
 .footer-section {
-  text-align: center; padding: 40px 0 60px;
-  opacity: 0; animation: fadeIn 2s ease-out 2s both;
+  text-align: center; margin-top: 50px; position: relative; z-index: 12;
+  opacity: 0; animation: fadeIn 2s ease-out 1.5s both;
 }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .footer-actions {
   display: flex; justify-content: center; gap: 16px; margin-bottom: 30px; flex-wrap: wrap;
 }
 .footer-btn {
-  padding: 10px 24px; border-radius: 50px; font-size: 0.85rem; letter-spacing: 2px;
+  padding: 10px 24px; border-radius: 50px; font-size: 0.82rem; letter-spacing: 2px;
   cursor: pointer; transition: all 0.35s ease; font-family: 'Noto Serif SC', serif;
-  background: transparent; border: 1px solid rgba(122,175,219,0.25); color: var(--text-secondary);
-  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(240,212,160,0.15);
+  color: rgba(245, 237, 224, 0.5); position: relative; z-index: 12;
 }
-.footer-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); background: rgba(122,175,219,0.08); }
-.footer-btn.copied { border-color: var(--accent-gold); color: var(--accent-gold); }
+.footer-btn:hover { border-color: var(--warm-gold); color: var(--cream); background: rgba(240,212,160,0.06); }
+.footer-btn.copied { border-color: var(--warm-gold); color: var(--warm-gold); }
 .footer-deco { opacity: 0.3; margin-top: 20px; }
-.footer-deco svg { width: 36px; height: 36px; fill: var(--accent-gold); }
-.footer-credit { font-size: 0.75rem; color: var(--text-secondary); opacity: 0.4; margin-top: 16px; letter-spacing: 1px; }
+.footer-deco svg { width: 32px; height: 32px; fill: var(--warm-gold); }
+.footer-credit { font-size: 0.7rem; color: rgba(245,237,224,0.3); margin-top: 14px; letter-spacing: 1px; font-family: 'Noto Serif SC', serif; }
 
-/* Divider */
-.divider-set {
-  display: flex; align-items: center; justify-content: center;
-  margin: 30px 0; gap: 0;
+/* ── Tooltip ── */
+.term-tooltip {
+  position: fixed; z-index: 300; pointer-events: none;
+  background: rgba(30, 22, 20, 0.97); border: 1px solid rgba(240,212,160,0.3);
+  border-radius: 10px; padding: 12px 18px; max-width: 260px;
+  font-size: 0.8rem; line-height: 1.7; color: var(--cream);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  font-family: 'Noto Serif SC', serif;
 }
-.divider-line { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--accent-gold), transparent); }
-.divider-dot { width: 5px; height: 5px; background: var(--accent-gold); border-radius: 50%; margin: 0 12px;
-  box-shadow: 0 0 8px var(--glow-gold); }
+.term-tooltip.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.term-tooltip .tt-title { color: var(--warm-gold); font-weight: 600; margin-bottom: 4px; font-size: 0.85rem; }
 
-/* Toast */
+/* ── Toast ── */
 .toast {
   position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px);
-  background: rgba(20,24,40,0.95); border: 1px solid var(--accent-gold);
-  border-radius: 50px; padding: 12px 28px; color: var(--accent-gold);
-  font-size: 0.9rem; letter-spacing: 2px; z-index: 300; opacity: 0;
-  transition: all 0.4s ease; pointer-events: none;
-  backdrop-filter: blur(20px);
+  background: rgba(30,22,20,0.95); border: 1px solid var(--warm-gold);
+  border-radius: 50px; padding: 12px 28px; color: var(--warm-gold);
+  font-size: 0.85rem; letter-spacing: 2px; z-index: 400; opacity: 0;
+  transition: all 0.4s ease; pointer-events: none; font-family: 'Noto Serif SC', serif;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* Animations */
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-/* Responsive */
+/* ── Responsive ── */
 @media (max-width: 768px) {
-  .container { padding: 70px 18px 40px; }
-  .stanza-card { padding: 24px 20px; line-height: 2.3; }
-  .stanza-card p { font-size: 0.98rem; }
-  .hero { padding: 30px 0 20px; }
-  .feynman-ornament svg { width: 200px; }
-  .formula-box { padding: 12px 18px; }
-  .formula-box .katex { font-size: 0.95em; }
-  .footer-actions { gap: 10px; }
-  .footer-btn { padding: 8px 18px; font-size: 0.78rem; }
+  .container { padding: 80px 16px 60px; }
+  .poem-paper { padding: 28px 20px; border-radius: 3px; }
+  .stanza { margin-bottom: 28px; }
 }
-
 @media (max-width: 480px) {
-  .container { padding: 50px 14px 30px; }
-  .hero-title { letter-spacing: 4px; }
-  .hero-subtitle { letter-spacing: 3px; font-size: 0.78rem; }
-  .stanza-card { padding: 20px 16px; line-height: 2.2; border-radius: 12px; }
-  .stanza-card p { font-size: 0.9rem; letter-spacing: 1px; }
-  .stanza-wrapper { margin-bottom: 40px; }
-  .climax-section { padding: 50px 0 20px; }
+  .container { padding: 60px 10px 40px; }
+  .hero-title { letter-spacing: 3px; }
+  .hero-subtitle { font-size: 0.72rem; letter-spacing: 3px; }
+  .poem-paper { padding: 22px 16px; font-size: 0.95rem; line-height: 2.2; }
+  .stanza { margin-bottom: 22px; }
+  .footer-actions { gap: 10px; }
+  .footer-btn { padding: 8px 16px; font-size: 0.72rem; }
 }
 </style>
 </head>
 <body>
 
 <canvas id="particle-canvas"></canvas>
-<div class="glow-orb glow-orb-1"></div>
-<div class="glow-orb glow-orb-2"></div>
-<div class="glow-orb glow-orb-3"></div>
+<canvas id="heart-canvas"></canvas>
+<canvas id="sparkle-canvas"></canvas>
 <div class="progress-bar" id="progress-bar"></div>
 
-<div class="container" id="main-container">
+<div class="container">
 
   <!-- Hero -->
   <section class="hero">
@@ -318,97 +265,71 @@ body {
     <p class="hero-subtitle">GAUGE THEORY OF LOVE</p>
   </section>
 
-  <!-- Feynman Diagram -->
-  <div class="feynman-ornament">
-    <svg viewBox="0 0 280 60" xmlns="http://www.w3.org/2000/svg">
-      <line x1="30" y1="30" x2="95" y2="30"/>
-      <line x1="95" y1="30" x2="185" y2="30"/>
-      <line x1="185" y1="30" x2="250" y2="30"/>
-      <circle cx="95" cy="30" r="4"/>
-      <circle cx="185" cy="30" r="4"/>
-      <path d="M95 30 Q 140 -10 185 30" fill="none" stroke="#d4a853" stroke-width="0.6" stroke-dasharray="3 4"/>
-      <path d="M95 30 Q 140 70 185 30" fill="none" stroke="#d4a853" stroke-width="0.6" stroke-dasharray="3 4"/>
-      <text x="140" y="16" fill="#d4a853" font-size="8" text-anchor="middle" font-family="serif" font-style="italic" opacity="0.6">g</text>
-      <text x="140" y="52" fill="#d4a853" font-size="8" text-anchor="middle" font-family="serif" font-style="italic" opacity="0.6">g</text>
-      <text x="30" y="20" fill="#7aafdb" font-size="7" text-anchor="middle" opacity="0.5">&psi;</text>
-      <text x="250" y="20" fill="#7aafdb" font-size="7" text-anchor="middle" opacity="0.5">&psi;</text>
-    </svg>
-  </div>
+  <!-- Poem Paper -->
+  <div class="poem-paper" id="poem-paper">
 
-  <div class="divider-set"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
-
-  <!-- Stanza 1 -->
-  <div class="stanza-wrapper" data-stanza="1">
-    <div class="stanza-card">
-      <div class="stanza-number">I &middot; 对称性自发破缺</div>
-      <p>在遇到你之前，我的<span class="hl-gold" data-term="gauge-field">规范场</span>无质量，</p>
-      <p>所有粒子都以<span class="hl-blue" data-term="light-speed">光速</span>疾驰，没有停驻的理由。</p>
-      <p>直到你张开<span class="hl-gold" data-term="higgs-field">希格斯场</span>的势能</p>
-      <div class="formula-box" id="formula-v"></div>
-      <p>对称性突然<span class="hl-gold" data-term="symmetry-breaking">自发破缺</span>了——</p>
-      <p>真空期待值不再为零 <span class="inline-formula" id="formula-vev"></span>。</p>
+    <div class="stanza" data-stanza="1">
+      <span class="stanza-num">I · 对称性自发破缺</span>
+      <p>在遇到你之前，我的<span class="hl hl-gold" data-term="gauge-field">规范场</span>无质量，</p>
+      <p>所有粒子都以<span class="hl hl-blue" data-term="light-speed">光速</span>疾驰，</p>
+      <p>没有停驻的理由。</p>
+      <p>直到你张开<span class="hl hl-gold" data-term="higgs-field">希格斯场</span>的势能</p>
+      <p class="formula-block" id="formula-v"></p>
+      <p>对称性突然<span class="hl hl-gold" data-term="symmetry-breaking">自发破缺</span>了——</p>
+      <p>真空期待值不再为零 <span class="formula-inline" id="formula-vev"></span>。</p>
     </div>
-  </div>
 
-  <!-- Stanza 2 -->
-  <div class="stanza-wrapper" data-stanza="2">
-    <div class="stanza-card">
-      <div class="stanza-number">II &middot; 戈德斯通模式</div>
-      <p>你依稀是那个<span class="hl-gold" data-term="ground-state">非零的基态</span>选择，</p>
-      <p>让我咽下<span class="hl-blue" data-term="goldstone">戈德斯通玻色子</span>，</p>
-      <p>骤然获得了<span class="hl-gold" data-term="inertia">惯性</span>、<span class="hl-gold" data-term="weight">重量</span>，以及思念的静能 <span class="inline-formula" id="formula-emc"></span>。</p>
+    <div class="stanza" data-stanza="2">
+      <span class="stanza-num">II · 戈德斯通模式</span>
+      <p>你依稀是那个<span class="hl hl-gold" data-term="ground-state">非零的基态</span>选择，</p>
+      <p>让我咽下<span class="hl hl-blue" data-term="goldstone">戈德斯通玻色子</span>，</p>
+      <p>骤然获得了<span class="hl hl-gold" data-term="inertia">惯性</span>、<span class="hl hl-gold" data-term="weight">重量</span>，</p>
+      <p>以及思念的静能 <span class="formula-inline" id="formula-emc"></span>。</p>
     </div>
-  </div>
 
-  <!-- Stanza 3 -->
-  <div class="stanza-wrapper" data-stanza="3">
-    <div class="stanza-card">
-      <div class="stanza-number">III &middot; 规范群破缺</div>
-      <p><span class="hl-rose">婷婷</span>于二重态的唯一方向，</p>
-      <p>你破缺了我全部的孤立对称群 <span class="inline-formula" id="formula-su2"></span>。</p>
+    <div class="stanza" data-stanza="3">
+      <span class="stanza-num">III · 规范群破缺</span>
+      <p><span class="hl hl-rose">婷婷</span>于二重态的唯一方向，</p>
+      <p>你破缺了我全部的孤立对称群</p>
+      <p class="formula-block" id="formula-su2"></p>
     </div>
-  </div>
 
-  <!-- Stanza 4 -->
-  <div class="stanza-wrapper" data-stanza="4">
-    <div class="stanza-card">
-      <div class="stanza-number">IV &middot; 质量生成</div>
-      <p>于是，传递弱作用的<span class="hl-blue" data-term="w-boson">中间玻色子</span>变得沉重，</p>
-      <p>一如我<span class="hl-gold" data-term="heartbeat">沉甸甸的心跳</span>。</p>
+    <div class="stanza" data-stanza="4">
+      <span class="stanza-num">IV · 质量生成</span>
+      <p>于是，传递弱作用的<span class="hl hl-blue" data-term="w-boson">中间玻色子</span></p>
+      <p>变得沉重，</p>
+      <p>一如我<span class="hl hl-gold" data-term="heartbeat">沉甸甸的心跳</span>。</p>
     </div>
-  </div>
 
-  <!-- Stanza 5 -->
-  <div class="stanza-wrapper" data-stanza="5">
-    <div class="stanza-card">
-      <div class="stanza-number">V &middot; 不变质量</div>
-      <p>我们之间，从此有了<span class="hl-gold" data-term="invariant-mass">不变质量</span> <span class="inline-formula" id="formula-mass"></span>，</p>
-      <p>在每一次<span class="hl-blue" data-term="gauge-transform">规范变换</span>下都不再虚无。</p>
+    <div class="stanza" data-stanza="5">
+      <span class="stanza-num">V · 不变质量</span>
+      <p>我们之间，从此有了</p>
+      <p><span class="hl hl-gold" data-term="invariant-mass">不变质量</span> <span class="formula-inline" id="formula-mass"></span>，</p>
+      <p>在每一次<span class="hl hl-blue" data-term="gauge-transform">规范变换</span>下</p>
+      <p>都不再虚无。</p>
     </div>
-  </div>
 
-  <!-- Stanza 6: Climax -->
-  <div class="stanza-wrapper" data-stanza="6">
-    <div class="stanza-card" style="border-color: rgba(201,122,138,0.2);">
-      <div class="stanza-number">VI &middot; 希格斯机制</div>
-      <p><span class="hl-rose" style="font-size:1.25rem">张依婷，</span></p>
-      <p>你就是我的<span class="hl-gold" data-term="higgs-mechanism">希格斯机制</span>——</p>
-      <p>让原本冰冷的<span class="hl-blue" data-term="quantum-fluctuation">量子涨落</span>，</p>
-      <p>凝结出爱情的<span class="hl-rose">不变质量</span>。</p>
+    <div class="stanza" data-stanza="6">
+      <span class="stanza-num">VI · 希格斯机制</span>
+      <p><span class="hl hl-rose" style="font-size:1.3em">张依婷，</span></p>
+      <p>你就是我的<span class="hl hl-gold" data-term="higgs-mechanism">希格斯机制</span>——</p>
+      <p>让原本冰冷的<span class="hl hl-blue" data-term="quantum-fluctuation">量子涨落</span>，</p>
+      <p>凝结出爱情的<span class="hl hl-rose">不变质量</span>。</p>
     </div>
-  </div>
 
-  <!-- Star Button -->
-  <div class="climax-section" id="climax-section">
-    <div class="climax-star">★</div>
-    <p class="climax-line">点击下方 &middot; 让粒子凝聚为星</p>
-    <button class="star-btn" id="star-btn" onclick="triggerStar()">★ 对称性破缺 ★</button>
-  </div>
+    <!-- Heart Button -->
+    <div class="climax-section" id="climax-section">
+      <div class="climax-name">💝</div>
+      <p class="climax-hint">点击下方 · 让粒子凝聚为心</p>
+      <button class="heart-btn" id="heart-btn" onclick="triggerHeart()">♥ 对称性破缺 ♥</button>
+    </div>
 
-  <!-- Signature -->
-  <div class="signature-section" id="signature-section">
-    <div class="divider-set"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
-    <p class="signature">献给张依婷</p>
+    <!-- Signature -->
+    <div class="signature-section" id="signature-section">
+      <div class="signature-line"></div>
+      <p class="signature">献给张依婷</p>
+    </div>
+
   </div>
 
   <!-- Footer -->
@@ -416,273 +337,355 @@ body {
     <div class="footer-actions">
       <button class="footer-btn" onclick="copyPoem()" id="copy-btn">复制诗句</button>
       <button class="footer-btn" onclick="sharePoem()">分享链接</button>
-      <button class="footer-btn" onclick="toggleParticles()" id="particle-btn">粒子效果</button>
     </div>
     <div class="footer-deco">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
       </svg>
     </div>
-    <p class="footer-credit">杨-米尔斯规范场论 &middot; 希格斯机制 &middot; 献给婷婷</p>
+    <p class="footer-credit">杨-米尔斯规范场论 · 希格斯机制 · 献给婷婷</p>
   </div>
 
 </div>
 
 <!-- Tooltip -->
 <div class="term-tooltip" id="term-tooltip"></div>
-
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-// KaTeX
+/* ═════════════════════════════════════════════
+   KaTeX Rendering
+   ═════════════════════════════════════════════ */
 var kopts = { throwOnError: false, trust: true };
 document.getElementById('formula-v').innerHTML = katex.renderToString(
   'V(\\phi)=\\mu^2\\phi^\\dagger\\phi+\\lambda(\\phi^\\dagger\\phi)^2', Object.assign({}, kopts, {displayMode: true}));
 document.getElementById('formula-vev').innerHTML = katex.renderToString('\\langle\\phi\\rangle \\neq 0', kopts);
 document.getElementById('formula-emc').innerHTML = katex.renderToString('E = mc^2', kopts);
-document.getElementById('formula-su2').innerHTML = katex.renderToString('SU(2)_L \\times U(1)_Y', kopts);
+document.getElementById('formula-su2').innerHTML = katex.renderToString('SU(2)_L \\times U(1)_Y', Object.assign({}, kopts, {displayMode: true}));
 document.getElementById('formula-mass').innerHTML = katex.renderToString('\\sqrt{p^\\mu p_\\mu} \\neq 0', kopts);
 
-// Physics Glossary
+/* ═════════════════════════════════════════════
+   Physics Glossary
+   ═════════════════════════════════════════════ */
 var glossary = {
   'gauge-field': ['规范场', '传递相互作用的场。标准模型中，胶子传递强相互作用，W/Z玻色子传递弱相互作用，光子传递电磁力。这里的规范场无质量，就像遇见你之前的我——没有锚点，无处停驻。'],
-  'light-speed': ['光速', 'c \u2248 3\u00d710\u2078 m/s。无质量粒子只能以光速运动，永远无法静止。就像单身时那种无法停下的漂泊感。'],
+  'light-speed': ['光速', 'c ≈ 3×10⁸ m/s。无质量粒子只能以光速运动，永远无法静止。就像单身时那种无法停下的漂泊感。'],
   'higgs-field': ['希格斯场', '遍布全宇宙的标量场，粒子与它相互作用而获得质量。你就是遍布我宇宙的希格斯场，让我从无质量的漂泊中获得了存在的重量。'],
   'symmetry-breaking': ['自发对称破缺', '物理系统的基态比拉格朗日量拥有更低的对称性。就像圆桌中央的酒杯倒向某一侧，选择了一个方向——你的出现，就是我对称性的自发破缺。'],
-  'ground-state': ['非零基态', '量子场论中能量最低的状态。希格斯场的基态非零（v\u2248246 GeV），真空并非真的空。你对我的意义，也不是零。'],
+  'ground-state': ['非零基态', '量子场论中能量最低的状态。希格斯场的基态非零（v≈246 GeV），真空并非真的空。你对我的意义，也不是零。'],
   'goldstone': ['戈德斯通玻色子', '连续对称性自发破缺时产生的无质量玻色子。在希格斯机制中，它们被规范玻色子"吃掉"，使后者获得质量。我咽下对你的思念，于是获得了沉甸甸的存在感。'],
   'inertia': ['惯性', '质量的定义之一：抵抗运动状态改变的能力。遇见你之后，我不再随波逐流——我的轨迹有了方向，有了不愿改变的惯性。'],
   'weight': ['重量', '引力场中质量的表现。但在这里，它是思念的重量——沉甸甸的，让人无法忽视。'],
-  'w-boson': ['中间玻色子', 'W\u207a、W\u207b、Z\u2070玻色子，传递弱相互作用。希格斯机制前它们无质量，机制后获得约80-90 GeV/c\u00b2的质量。变得沉重的玻色子，就是我的心跳。'],
+  'w-boson': ['中间玻色子', 'W⁺、W⁻、Z⁰玻色子，传递弱相互作用。希格斯机制前它们无质量，机制后获得约80-90 GeV/c²的质量。变得沉重的玻色子，就是我的心跳。'],
   'heartbeat': ['心跳', '约60-100次/分钟，但在此刻，每一次都像W玻色子一样沉重而有力。'],
-  'invariant-mass': ['不变质量', '\u221Ap\u03bcp\u03bc，洛伦兹不变量。无论参考系如何变换，这个值始终不变。就像真正的爱情，在所有的规范变换下永不变。'],
+  'invariant-mass': ['不变质量', '√pμpμ，洛伦兹不变量。无论参考系如何变换，这个值始终不变。就像真正的爱情，在所有的规范变换下永不变。'],
   'gauge-transform': ['规范变换', '场在每一点独立的相位旋转。物理规律在规范变换下不变，这是现代物理学的基石。而我们的关系，在时间的每一次变换下，依然不变。'],
   'higgs-mechanism': ['希格斯机制', '通过自发对称破缺赋予粒子质量的机制，2013年诺贝尔物理学奖。你就是我的希格斯机制——让虚无的量子涨落，凝聚出爱情的不变质量。'],
   'quantum-fluctuation': ['量子涨落', '量子场在真空中的随机起伏。海森堡不确定性原理告诉我们，真空不是"无"，而是沸腾的涨落之海。在遇见你之前，我的世界只是毫无意义的量子涨落。'],
 };
 
-// Tooltip System
+/* ═════════════════════════════════════════════
+   Tooltip
+   ═════════════════════════════════════════════ */
 var tooltip = document.getElementById('term-tooltip');
 var tooltipTimer;
 
-document.querySelectorAll('[data-term]').forEach(function(el) {
+function positionTooltip(e) {
+  var x = e.clientX + 14, y = e.clientY - 12;
+  var tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+  if (x + tw > window.innerWidth - 12) x = e.clientX - tw - 14;
+  if (y + th > window.innerHeight - 12) y = e.clientY - th - 12;
+  if (y < 8) y = 8;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+}
+
+document.querySelectorAll('.hl[data-term]').forEach(function(el) {
   el.addEventListener('mouseenter', function(e) {
-    var term = glossary[el.dataset.term];
-    if (!term) return;
-    tooltip.innerHTML = '<div class="tt-title">' + term[0] + '</div>' + term[1];
+    var t = glossary[el.dataset.term];
+    if (!t) return;
+    tooltip.innerHTML = '<div class="tt-title">' + t[0] + '</div>' + t[1];
     positionTooltip(e);
     tooltip.classList.add('active');
   });
   el.addEventListener('mousemove', function(e) { positionTooltip(e); });
   el.addEventListener('mouseleave', function() {
-    tooltipTimer = setTimeout(function() { tooltip.classList.remove('active'); }, 150);
+    tooltipTimer = setTimeout(function() { tooltip.classList.remove('active'); }, 120);
   });
   el.addEventListener('click', function(e) {
-    var term = glossary[el.dataset.term];
-    if (!term) return;
-    tooltip.innerHTML = '<div class="tt-title">' + term[0] + '</div>' + term[1];
+    var t = glossary[el.dataset.term];
+    if (!t) return;
+    tooltip.innerHTML = '<div class="tt-title">' + t[0] + '</div>' + t[1];
     positionTooltip(e);
     tooltip.classList.add('active');
     clearTimeout(tooltipTimer);
-    setTimeout(function() { tooltip.classList.remove('active'); }, 4000);
+    setTimeout(function() { tooltip.classList.remove('active'); }, 3500);
   });
 });
-
 tooltip.addEventListener('mouseenter', function() { clearTimeout(tooltipTimer); tooltip.classList.add('active'); });
 tooltip.addEventListener('mouseleave', function() { tooltip.classList.remove('active'); });
 
-function positionTooltip(e) {
-  var x = e.clientX + 16, y = e.clientY - 10;
-  var tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
-  if (x + tw > window.innerWidth - 16) x = e.clientX - tw - 16;
-  if (y + th > window.innerHeight - 16) y = e.clientY - th - 10;
-  if (y < 10) y = 10;
-  tooltip.style.left = x + 'px';
-  tooltip.style.top = y + 'px';
-}
-
-// Scroll Animations
+/* ═════════════════════════════════════════════
+   Scroll Animations + Progress
+   ═════════════════════════════════════════════ */
 var observer = new IntersectionObserver(function(entries) {
-  entries.forEach(function(entry) {
-    if (entry.isIntersecting) entry.target.classList.add('visible');
-  });
-}, { threshold: 0.2, rootMargin: '0px 0px -60px 0px' });
+  entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.stanza, .climax-section, .signature-section').forEach(function(el) { observer.observe(el); });
 
-document.querySelectorAll('.stanza-wrapper, .climax-section, .signature-section').forEach(function(el) {
-  observer.observe(el);
-});
-
-// Progress Bar
 window.addEventListener('scroll', function() {
-  var scrollTop = window.scrollY;
-  var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-  document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
+  var pct = document.documentElement.scrollHeight > window.innerHeight
+    ? (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100 : 0;
+  document.getElementById('progress-bar').style.width = Math.min(pct, 100) + '%';
 });
 
-// Particle System
-var canvas = document.getElementById('particle-canvas');
-var ctx = canvas.getContext('2d');
-var W, H, particles = [], mouse = { x: null, y: null };
-var COUNT = 100, LINK_DIST = 130, MOUSE_DIST = 180;
-var starMode = false, starProgress = 0;
+/* ═════════════════════════════════════════════
+   Particle Canvas (floating warm particles)
+   ═════════════════════════════════════════════ */
+var pCanvas = document.getElementById('particle-canvas');
+var pCtx = pCanvas.getContext('2d');
+var PW, PH, particles = [];
 
-function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-window.addEventListener('resize', resize);
-window.addEventListener('mousemove', function(e) { mouse.x = e.clientX; mouse.y = e.clientY; });
-window.addEventListener('mouseleave', function() { mouse.x = mouse.y = null; });
-resize();
+function pResize() { PW = pCanvas.width = window.innerWidth; PH = pCanvas.height = window.innerHeight; }
+window.addEventListener('resize', function() { pResize(); hResize(); });
 
-function Particle() {
-  this.reset = function() {
-    this.x = Math.random() * W;
-    this.y = Math.random() * H;
-    this.vx = (Math.random() - 0.5) * 0.6;
-    this.vy = (Math.random() - 0.5) * 0.6;
-    this.r = Math.random() * 2.2 + 0.5;
-    this.o = Math.random() * 0.5 + 0.2;
-    this.baseR = this.r;
-    this.angle = Math.random() * Math.PI * 2;
-    this.orbitR = 60 + Math.random() * 120;
-    this.orbitSpeed = 0.005 + Math.random() * 0.015;
+function rand(a,b) { return Math.random()*(b-a)+a; }
+function randInt(a,b) { return Math.floor(rand(a,b+1)); }
+
+function ParticleItem() {
+  var self = this;
+  self.reset = function() {
+    self.x = Math.random()*PW;
+    self.y = PH + 10;
+    self.size = rand(1, 2.8);
+    self.speedY = rand(-0.3, -0.8);
+    self.speedX = rand(-0.15, 0.15);
+    self.opacity = rand(0.15, 0.4);
+    self.wobbleA = rand(0.3, 1);
+    self.wobbleS = rand(0.005, 0.018);
+    self.wobbleO = Math.random()*Math.PI*2;
+    self.life = 0;
   };
-  this.reset();
-
-  this.update = function() {
-    if (starMode) {
-      var t = this.angle + starProgress * this.orbitSpeed * 100;
-      var scale = this.orbitR / 16;
-      var segment = Math.floor(t / (Math.PI * 2 / 5)) % 5;
-      var frac = (t % (Math.PI * 2 / 5)) / (Math.PI * 2 / 5);
-      var outerAngle = segment * Math.PI * 2 / 5 - Math.PI / 2;
-      var innerAngle = outerAngle + Math.PI / 5;
-      var outerR = scale, innerR = scale * 0.38;
-      var sx, sy;
-      if (frac < 0.5) {
-        var f = frac * 2;
-        sx = Math.cos(outerAngle) * outerR * (1-f) + Math.cos(innerAngle) * innerR * f;
-        sy = Math.sin(outerAngle) * outerR * (1-f) + Math.sin(innerAngle) * innerR * f;
-      } else {
-        var f2 = (frac - 0.5) * 2;
-        var nextOuter = ((segment + 1) % 5) * Math.PI * 2 / 5 - Math.PI / 2;
-        sx = Math.cos(innerAngle) * innerR * (1-f2) + Math.cos(nextOuter) * outerR * f2;
-        sy = Math.sin(innerAngle) * innerR * (1-f2) + Math.sin(nextOuter) * outerR * f2;
-      }
-      var targetX = W/2 + sx;
-      var targetY = H/2 + sy;
-      this.x += (targetX - this.x) * 0.03;
-      this.y += (targetY - this.y) * 0.03;
-      this.r = this.baseR * (0.7 + 0.3 * starProgress);
-      this.o = Math.min(1, this.o + 0.002);
-    } else {
-      this.x += this.vx;
-      this.y += this.vy;
-      if (this.x < 0 || this.x > W) this.vx *= -1;
-      if (this.y < 0 || this.y > H) this.vy *= -1;
-      if (mouse.x !== null) {
-        var dx = mouse.x - this.x, dy = mouse.y - this.y;
-        var d = Math.sqrt(dx*dx + dy*dy);
-        if (d < MOUSE_DIST) { var f = (MOUSE_DIST-d)/MOUSE_DIST; this.vx += (dx/d)*f*0.02; this.vy += (dy/d)*f*0.02; }
-      }
-      var s = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
-      if (s > 1.5) { this.vx = (this.vx/s)*1.5; this.vy = (this.vy/s)*1.5; }
-    }
+  self.reset();
+  self.update = function() {
+    self.life++;
+    self.x += self.speedX + Math.sin(self.life*self.wobbleS+self.wobbleO)*self.wobbleA*0.08;
+    self.y += self.speedY;
+    if (self.y < -10 || self.x < -10 || self.x > PW+10) self.reset();
   };
-
-  this.draw = function() {
+  self.draw = function(ctx) {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
-    var color = starMode ? 'rgba(212,168,83,' + this.o + ')' : 'rgba(212,168,83,' + this.o + ')';
-    ctx.fillStyle = color;
+    ctx.arc(self.x, self.y, self.size, 0, Math.PI*2);
+    ctx.fillStyle = 'hsla(340, 55%, 72%, ' + self.opacity + ')';
     ctx.fill();
   };
 }
 
-for (var i = 0; i < COUNT; i++) particles.push(new Particle());
+/* ═════════════════════════════════════════════
+   Heart Canvas (star field + heart constellation)
+   ═════════════════════════════════════════════ */
+var hCanvas = document.getElementById('heart-canvas');
+var hCtx = hCanvas.getContext('2d');
+var HW, HH, stars = [], constellationStars = [], conProgress = 0, sparkles = [];
+var heartActive = false, heartTime = 0;
 
-(function loop() {
-  ctx.clearRect(0, 0, W, H);
-  for (var i = 0; i < particles.length; i++) { particles[i].update(); particles[i].draw(); }
-  for (var i = 0; i < particles.length; i++) {
-    for (var j = i+1; j < particles.length; j++) {
-      var dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
-      var d = Math.sqrt(dx*dx + dy*dy);
-      var maxDist = starMode ? LINK_DIST * 1.5 : LINK_DIST;
-      if (d < maxDist) {
-        ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-        var alpha = (1 - d/maxDist) * (starMode ? 0.22 : 0.12);
-        var color = starMode ? 'rgba(212,168,83,' + alpha + ')' : 'rgba(122,175,219,' + alpha + ')';
-        ctx.strokeStyle = color; ctx.lineWidth = 0.5; ctx.stroke();
+function hResize() { HW = hCanvas.width = window.innerWidth; HH = hCanvas.height = window.innerHeight; }
+
+function StarItem() {
+  var self = this;
+  self.x = Math.random()*HW;
+  self.y = Math.random()*HH;
+  self.size = rand(0.4, 2.2);
+  self.baseOp = rand(0.2, 0.8);
+  self.opacity = 0;
+  self.twinkleS = rand(0.008, 0.03);
+  self.twinkleO = Math.random()*Math.PI*2;
+  self.constellation = false;
+}
+
+function SparkleItem(x, y) {
+  var self = this;
+  self.x = x + rand(-25,25);
+  self.y = y + rand(-25,25);
+  self.size = rand(0.8, 2.5);
+  self.life = 0;
+  self.maxLife = rand(25, 50);
+  self.sx = rand(-0.4, 0.4);
+  self.sy = rand(-0.4, 0.4);
+}
+
+function heartPoints(count, cx, cy, scale) {
+  var pts = [];
+  for (var i = 0; i < count; i++) {
+    var t = (i/count)*Math.PI*2;
+    var x = 16*Math.pow(Math.sin(t),3);
+    var y = -(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
+    pts.push({ x: cx + x*scale, y: cy + y*scale });
+  }
+  return pts;
+}
+
+function initStars() {
+  hResize();
+  stars = [];
+  for (var i = 0; i < 200; i++) stars.push(new StarItem());
+}
+
+function matchStarsToHeart() {
+  var cx = HW/2, cy = HH/2 - 30;
+  var scale = Math.min(HW, HH)*0.011;
+  var hpts = heartPoints(30, cx, cy, scale);
+  constellationStars = [];
+  hpts.forEach(function(hp) {
+    var best = null, bestD = Infinity;
+    stars.forEach(function(s) {
+      var d = Math.hypot(s.x - hp.x, s.y - hp.y);
+      if (d < bestD) { bestD = d; best = s; }
+    });
+    if (best) { best.constellation = true; constellationStars.push(best); }
+  });
+}
+
+function triggerHeart() {
+  if (heartActive) return;
+  heartActive = true;
+  conProgress = 0;
+  heartTime = 0;
+
+  var btn = document.getElementById('heart-btn');
+  btn.classList.add('triggered');
+  btn.innerHTML = '♥ 爱是不变质量 ♥';
+
+  document.getElementById('heart-canvas').style.opacity = '1';
+  document.getElementById('particle-canvas').style.opacity = '0.3';
+
+  initStars();
+
+  setTimeout(function() {
+    matchStarsToHeart();
+    var startT = Date.now(), dur = 2800;
+    function anim() {
+      var elapsed = Date.now() - startT;
+      conProgress = Math.min(elapsed/dur, 1);
+      if (conProgress < 1) requestAnimationFrame(anim);
+    }
+    anim();
+  }, 800);
+
+  showToast('对称性已破缺 · 粒子凝聚为心 ♥');
+}
+
+/* ═════════════════════════════════════════════
+   Heart Canvas Animation Loop
+   ═════════════════════════════════════════════ */
+(function heartLoop() {
+  if (heartActive) {
+    heartTime++;
+    hCtx.clearRect(0, 0, HW, HH);
+
+    stars.forEach(function(s) {
+      s.opacity = s.baseOp*(0.6+0.4*Math.sin(heartTime*s.twinkleS+s.twinkleO));
+      hCtx.beginPath();
+      hCtx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+      hCtx.fillStyle = 'hsla(40, 40%, 88%, ' + s.opacity + ')';
+      hCtx.fill();
+      if (s.constellation && s.opacity > 0.4) {
+        hCtx.beginPath();
+        hCtx.arc(s.x, s.y, s.size*2.5, 0, Math.PI*2);
+        hCtx.fillStyle = 'hsla(340, 50%, 75%, ' + (s.opacity*0.12) + ')';
+        hCtx.fill();
       }
+    });
+
+    // Draw constellation heart
+    var lineCount = Math.floor(constellationStars.length*Math.min(conProgress,1));
+    if (lineCount >= 2) {
+      hCtx.strokeStyle = 'rgba(224,168,192,0.3)';
+      hCtx.lineWidth = 1;
+      hCtx.beginPath();
+      hCtx.moveTo(constellationStars[0].x, constellationStars[0].y);
+      for (var i = 1; i < lineCount; i++) {
+        hCtx.lineTo(constellationStars[i].x, constellationStars[i].y);
+      }
+      if (conProgress >= 1 && lineCount >= constellationStars.length) {
+        hCtx.lineTo(constellationStars[0].x, constellationStars[0].y);
+      }
+      hCtx.stroke();
+      // glow overlay
+      hCtx.strokeStyle = 'rgba(240,212,160,0.1)';
+      hCtx.lineWidth = 3;
+      hCtx.stroke();
+    }
+
+    // Sparkles near heart
+    sparkles = sparkles.filter(function(sp) { return sp.life < sp.maxLife; });
+    sparkles.forEach(function(sp) {
+      sp.life++; sp.x += sp.sx; sp.y += sp.sy;
+      var a = sp.life/sp.maxLife;
+      var alpha = a < 0.3 ? a/0.3 : 1-(a-0.3)/0.7;
+      if (alpha <= 0) return;
+      hCtx.beginPath();
+      hCtx.arc(sp.x, sp.y, sp.size*(1-a*0.5), 0, Math.PI*2);
+      hCtx.fillStyle = 'rgba(240,212,160,' + (alpha*0.7) + ')';
+      hCtx.fill();
+    });
+    if (conProgress > 0 && heartTime % 6 === 0 && constellationStars.length > 0) {
+      var cs = constellationStars[randInt(0, constellationStars.length-1)];
+      sparkles.push(new SparkleItem(cs.x, cs.y));
     }
   }
-  if (starMode && starProgress < 1) starProgress += 0.005;
-  requestAnimationFrame(loop);
+  requestAnimationFrame(heartLoop);
 })();
 
-// Star Trigger
-var starActive = false;
-function triggerStar() {
-  if (starActive) return;
-  starActive = true;
-  starMode = true;
-  starProgress = 0;
-  var btn = document.getElementById('star-btn');
-  btn.classList.add('triggered');
-  btn.innerHTML = '\u2605 爱是不变质量 \u2605';
+/* ═════════════════════════════════════════════
+   Particle Canvas Animation Loop
+   ═════════════════════════════════════════════ */
+(function particleLoop() {
+  pCtx.clearRect(0, 0, PW, PH);
+  particles.forEach(function(p) { p.update(); p.draw(pCtx); });
+  requestAnimationFrame(particleLoop);
+})();
 
-  document.querySelectorAll('.glow-orb').forEach(function(orb) {
-    orb.style.opacity = '0.22';
-    orb.style.transition = 'opacity 1.5s ease';
-  });
-  setTimeout(function() {
-    document.querySelectorAll('.glow-orb').forEach(function(orb) {
-      orb.style.opacity = '0.12';
-    });
-  }, 3000);
+/* ═════════════════════════════════════════════
+   Init
+   ═════════════════════════════════════════════ */
+pResize();
+for (var i = 0; i < 80; i++) particles.push(new ParticleItem());
+initStars();
 
-  showToast('对称性已破缺 \u00b7 粒子凝聚为星 \u2605');
-}
-
-// Copy Poem
+/* ═════════════════════════════════════════════
+   Copy / Share / Toast
+   ═════════════════════════════════════════════ */
 function copyPoem() {
-  var poem = '\u5f20\u4f9d\u5a77\u7684\u89c4\u8303\u573a\u8bba\n\n\u5728\u9047\u5230\u4f60\u4e4b\u524d\uff0c\u6211\u7684\u89c4\u8303\u573a\u65e0\u8d28\u91cf\uff0c\n\u6240\u6709\u7c92\u5b50\u90fd\u4ee5\u5149\u901f\u96b6\u9a70\uff0c\u6ca1\u6709\u505c\u9a7b\u7684\u7406\u7531\u3002\n\u76f4\u5230\u4f60\u5f20\u5f00\u5e0c\u683c\u65af\u573a\u7684\u52bf\u80fd\nV(\u03c6)=\u03bc\u00b2\u03c6\u2020\u03c6+\u03bb(\u03c6\u2020\u03c6)\u00b2\n\u5bf9\u79f0\u6027\u7a81\u7136\u81ea\u53d1\u7834\u7f3a\u4e86\u2014\u2014\n\u771f\u7a7a\u671f\u5f85\u503c\u4e0d\u518d\u4e3a\u96f6\u3008\u03c6\u3009\u22600\u3002\n\n\u4f60\u4f9d\u7a00\u662f\u90a3\u4e2a\u975e\u96f6\u7684\u57fa\u6001\u9009\u62e9\uff0c\n\u8ba9\u6211\u54bd\u4e0b\u6208\u5fb7\u65af\u901a\u73bb\u8272\u5b50\uff0c\n\u9aa4\u7136\u83b7\u5f97\u4e86\u60ef\u6027\u3001\u91cd\u91cf\uff0c\u4ee5\u53ca\u601d\u5ff5\u7684\u9759\u80fd E=mc\u00b2\u3002\n\n\u5a77\u5a77\u4e8e\u4e8c\u91cd\u6001\u7684\u552f\u4e00\u65b9\u5411\uff0c\n\u4f60\u7834\u7f3a\u4e86\u6211\u5168\u90e8\u7684\u5b64\u7acb\u5bf9\u79f0\u7fa4 SU(2)L\u00d7U(1)Y\u3002\n\n\u4e8e\u662f\uff0c\u4f20\u9012\u5f31\u4f5c\u7528\u7684\u4e2d\u95f4\u73bb\u8272\u5b50\u53d8\u5f97\u6c89\u91cd\uff0c\n\u4e00\u5982\u6211\u6c89\u7538\u7538\u7684\u5fc3\u8df3\u3002\n\n\u6211\u4eec\u4e4b\u95f4\uff0c\u4ece\u6b64\u6709\u4e86\u4e0d\u53d8\u8d28\u91cf\u221ap\u03bcp\u03bc\u22600\uff0c\n\u5728\u6bcf\u4e00\u6b21\u89c4\u8303\u53d8\u6362\u4e0b\u90fd\u4e0d\u518d\u865a\u65e0\u3002\n\n\u5f20\u4f9d\u5a77\uff0c\n\u4f60\u5c31\u662f\u6211\u7684\u5e0c\u683c\u65af\u673a\u5236\u2014\u2014\n\u8ba9\u539f\u672c\u51b0\u51b7\u7684\u91cf\u5b50\u6da8\u843d\uff0c\n\u51dd\u7ed3\u51fa\u7231\u60c5\u7684\u4e0d\u53d8\u8d28\u91cf\u3002\n\n\u2014\u2014 \u732e\u7ed9\u5f20\u4f9d\u5a77';
+  var poem = '张依婷的规范场论\n\n' +
+    '在遇到你之前，我的规范场无质量，\n所有粒子都以光速疾驰，没有停驻的理由。\n直到你张开希格斯场的势能\nV(φ)=μ²φ†φ+λ(φ†φ)²\n对称性突然自发破缺了——\n真空期待值不再为零 ⟨φ⟩≠0。\n\n' +
+    '你依稀是那个非零的基态选择，\n让我咽下戈德斯通玻色子，\n骤然获得了惯性、重量，以及思念的静能 E=mc²。\n\n' +
+    '婷婷于二重态的唯一方向，\n你破缺了我全部的孤立对称群 SU(2)ₗ×U(1)ᵧ。\n\n' +
+    '于是，传递弱作用的中间玻色子变得沉重，\n一如我沉甸甸的心跳。\n\n' +
+    '我们之间，从此有了不变质量 √pμpμ≠0，\n在每一次规范变换下都不再虚无。\n\n' +
+    '张依婷，\n你就是我的希格斯机制——\n让原本冰冷的量子涨落，\n凝结出爱情的不变质量。\n\n—— 献给张依婷';
   navigator.clipboard.writeText(poem).then(function() {
-    var btn = document.getElementById('copy-btn');
-    btn.classList.add('copied');
-    btn.textContent = '\u2705 \u5df2\u590d\u5236';
-    showToast('\u8bd7\u53e5\u5df2\u590d\u5236\u5230\u526a\u8d34\u677f');
-    setTimeout(function() { btn.classList.remove('copied'); btn.textContent = '\u590d\u5236\u8bd7\u53e5'; }, 2000);
+    var b = document.getElementById('copy-btn');
+    b.classList.add('copied'); b.textContent = '✅ 已复制';
+    showToast('诗句已复制到剪贴板 ✨');
+    setTimeout(function() { b.classList.remove('copied'); b.textContent = '复制诗句'; }, 2000);
   });
 }
 
-// Share
 function sharePoem() {
   var url = window.location.href;
-  var text = '\u5f20\u4f9d\u5a77\u7684\u89c4\u8303\u573a\u8bba \u2014 \u4e00\u9996\u7528\u5e0c\u683c\u65af\u673a\u5236\u5199\u7684\u60c5\u8bd7';
   if (navigator.share) {
-    navigator.share({ title: text, url: url }).catch(function(){});
+    navigator.share({ title: '张依婷的规范场论', url: url }).catch(function(){});
   } else {
-    navigator.clipboard.writeText(url).then(function() { showToast('\u94fe\u63a5\u5df2\u590d\u5236'); });
+    navigator.clipboard.writeText(url).then(function() { showToast('链接已复制 🔗'); });
   }
 }
 
-// Toggle Particles
-var particlesOn = true;
-function toggleParticles() {
-  particlesOn = !particlesOn;
-  canvas.style.display = particlesOn ? 'block' : 'none';
-  document.getElementById('particle-btn').textContent = particlesOn ? '粒子效果' : '\u7c92\u5b50\u5df2\u5173';
-}
-
-// Toast
 function showToast(msg) {
   var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._timeout);
-  t._timeout = setTimeout(function() { t.classList.remove('show'); }, 2500);
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(function() { t.classList.remove('show'); }, 2500);
 }
 </script>
 </body>
