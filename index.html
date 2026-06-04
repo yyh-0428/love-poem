@@ -556,39 +556,70 @@ function triggerHeart() {
 })();
 
 /* ═════════════════════════════════════════════
-   Typewriter Engine
+   Typewriter Engine (DOM-based, only visible chars)
    ═════════════════════════════════════════════ */
-var TYPING_SPEED_MIN = 55;  // ms per character
-var TYPING_SPEED_MAX = 110;
-var NEWLINE_PAUSE = 180;
+var TYPING_SPEED_MIN = 22;  // ms per visible character
+var TYPING_SPEED_MAX = 48;
+var NEWLINE_PAUSE = 100;
+
+function tokenizeHTML(raw) {
+  // Parse raw HTML into tokens: 'char' for visible text, 'html' for instant elements
+  var div = document.createElement('div');
+  div.innerHTML = raw.replace(/\\n/g, '<tw-br>');
+  var tokens = [];
+
+  function walk(node) {
+    if (node.nodeType === 3) {
+      // Text node: each character is a token
+      var chars = node.textContent.split('');
+      chars.forEach(function(ch) { tokens.push({ type: 'char', char: ch }); });
+    } else if (node.nodeType === 1) {
+      var tag = node.tagName.toLowerCase();
+
+      if (tag === 'katex') {
+        // Render KaTeX formula fully at once
+        var formula = node.textContent;
+        var inline = node.getAttribute('inline') !== null;
+        try {
+          var rendered = katex.renderToString(formula, { throwOnError: false, displayMode: !inline });
+          tokens.push({ type: 'html', html: rendered });
+        } catch(e) {
+          tokens.push({ type: 'html', html: '<i>?</i>' });
+        }
+      } else if (tag === 'tw-br') {
+        // Our custom newline marker
+        tokens.push({ type: 'html', html: '<br>' });
+      } else if (tag === 'br') {
+        tokens.push({ type: 'html', html: '<br>' });
+      } else {
+        // Regular element: emit open tag, walk children, emit close tag
+        var openTag = '<' + tag;
+        for (var i = 0; i < node.attributes.length; i++) {
+          var a = node.attributes[i];
+          openTag += ' ' + a.name + '="' + a.value.replace(/"/g, '&quot;') + '"';
+        }
+        openTag += '>';
+        tokens.push({ type: 'html', html: openTag });
+
+        for (var j = 0; j < node.childNodes.length; j++) {
+          walk(node.childNodes[j]);
+        }
+
+        tokens.push({ type: 'html', html: '</' + tag + '>' });
+      }
+    }
+  }
+
+  for (var k = 0; k < div.childNodes.length; k++) {
+    walk(div.childNodes[k]);
+  }
+  return tokens;
+}
 
 function createCursor() {
   var el = document.createElement('span');
   el.className = 'typewriter-cursor';
   return el;
-}
-
-function parseTypewriterNodes(html) {
-  // Split HTML string into typed segments:
-  // - text nodes: typed char-by-char
-  // - <katex> tags: rendered in one shot
-  // - spans with data-term: typed as text inside
-  var segments = [];
-  var re = /(<katex[^>]*>.*?<\/katex>)/g;
-  var parts = html.split(re);
-  parts.forEach(function(part) {
-    if (/^<katex/.test(part)) {
-      segments.push({ type: 'katex', html: part });
-    } else {
-      // Further split by newlines to handle <br>-style
-      var lines = part.split('\\n');
-      lines.forEach(function(line, li) {
-        if (li > 0) segments.push({ type: 'newline' });
-        if (line.trim()) segments.push({ type: 'text', text: line });
-      });
-    }
-  });
-  return segments;
 }
 
 function typeStanza(stanzaEl) {
@@ -598,75 +629,48 @@ function typeStanza(stanzaEl) {
   var raw = stanzaEl.getAttribute('data-raw');
   if (!raw) { state.typing = false; return; }
 
-  // Parse segments
-  var segments = parseTypewriterNodes(raw);
-  // Also parse the raw into a flat list of HTML/text chunks for rendering
-  var flatChunks = [];
-  var re2 = /(<katex[^>]*>.*?<\/katex>)/g;
-  var parts = raw.split(re2);
-  parts.forEach(function(p) {
-    if (/^<katex/.test(p)) {
-      flatChunks.push({ katex: true, html: p });
-    } else {
-      var chars = p.replace(/\\n/g, '\n').split('');
-      chars.forEach(function(ch) {
-        flatChunks.push({ char: ch });
-      });
-    }
-  });
+  var tokens = tokenizeHTML(raw);
+  var idx = 0;
+  var buf = '';
 
-  // Build typed buffer char by char
-  var typed = '';
-  var charIdx = 0;
-  var container = document.createElement('div');
-  container.style.display = 'inline';
   stanzaEl.innerHTML = '';
-  stanzaEl.appendChild(container);
+  var holder = document.createElement('div');
+  holder.style.display = 'inline';
+  stanzaEl.appendChild(holder);
 
   var cursor = createCursor();
   stanzaEl.appendChild(cursor);
   state.cursorEl = cursor;
 
   function step() {
-    if (charIdx >= flatChunks.length) {
-      // Typing done
+    if (idx >= tokens.length) {
+      // Done — set final state
       cursor.classList.add('hidden');
       state.typing = false;
-      // Set final HTML
-      var finalHtml = raw.replace(/\\n/g, '').replace(/<katex([^>]*)>(.*?)<\/katex>/g, function(m, attrs, formula) {
-        var inline = attrs.indexOf('inline') >= 0;
-        try {
-          return katex.renderToString(formula, { throwOnError: false, trust: true, displayMode: !inline });
-        } catch(e) { return formula; }
+      // Final render: replace katex tags and clean up
+      var finalHtml = raw.replace(/\\n/g, '').replace(/<katex([^>]*)>(.*?)<\/katex>/g, function(m, attrs, f) {
+        var il = attrs.indexOf('inline') >= 0;
+        try { return katex.renderToString(f, { throwOnError: false, displayMode: !il }); }
+        catch(e) { return f; }
       });
       stanzaEl.innerHTML = finalHtml;
       bindTooltipEvents(stanzaEl);
-      // Start next stanza after a pause
       typeNextStanza();
       return;
     }
 
-    var chunk = flatChunks[charIdx];
-    if (chunk.katex) {
-      // Render KaTeX at once
-      try {
-        var attrs = chunk.html.match(/<katex([^>]*)>/)[1] || '';
-        var formula = chunk.html.replace(/<katex[^>]*>(.*?)<\/katex>/, '$1');
-        var inline = attrs.indexOf('inline') >= 0;
-        typed += katex.renderToString(formula, { throwOnError: false, trust: true, displayMode: !inline });
-      } catch(e) {}
-      container.innerHTML = typed;
-      charIdx++;
-      setTimeout(step, rand(TYPING_SPEED_MIN * 3, TYPING_SPEED_MAX * 3));
-    } else if (chunk.char === '\n') {
-      typed += '\n';
-      container.innerHTML = typed.replace(/\n/g, '<br>');
-      charIdx++;
-      setTimeout(step, NEWLINE_PAUSE);
+    var tok = tokens[idx];
+    if (tok.type === 'html') {
+      // Insert element HTML immediately (invisible to reader)
+      buf += tok.html;
+      holder.innerHTML = buf;
+      idx++;
+      step();  // no delay for HTML elements
     } else {
-      typed += chunk.char;
-      container.innerHTML = typed.replace(/\n/g, '<br>');
-      charIdx++;
+      // Type one visible character
+      buf += tok.char;
+      holder.innerHTML = buf;
+      idx++;
       setTimeout(step, rand(TYPING_SPEED_MIN, TYPING_SPEED_MAX));
     }
   }
@@ -680,8 +684,8 @@ function typeNextStanza() {
   if (next && next.getAttribute('data-raw')) {
     setTimeout(function() {
       next.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setTimeout(function() { typeStanza(next); }, 400);
-    }, 600);
+      setTimeout(function() { typeStanza(next); }, 350);
+    }, 500);
   }
 }
 
