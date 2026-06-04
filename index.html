@@ -3,177 +3,303 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>张依婷的规范场论</title>
+<title>张依婷的规范场论 · 交互诗篇</title>
+<meta name="description" content="一首用规范场论写的情诗 — 当杨-米尔斯理论遇见浪漫。献给张依婷。">
+<meta property="og:title" content="张依婷的规范场论">
+<meta property="og:description" content="用希格斯机制、规范变换、自发对称破缺写一首情诗。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#06060e">
+
 <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@200;300;400;600;700;900&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
+<style>
+:root {
+  --bg-deep: #06060e;
+  --bg-card: rgba(15, 18, 32, 0.88);
+  --text-primary: #efe3cf;
+  --text-secondary: #9badc4;
+  --accent-gold: #d4a853;
+  --accent-blue: #7aafdb;
+  --accent-rose: #c97a8a;
+  --glow-gold: rgba(212, 168, 83, 0.35);
+  --glow-blue: rgba(122, 175, 219, 0.25);
+  --border-subtle: rgba(122, 175, 219, 0.15);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
-  background: #0a0a0f;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Noto Serif SC', serif;
   min-height: 100vh;
   overflow-x: hidden;
-  font-family: 'Noto Serif SC', serif;
+  cursor: default;
 }
 
-/* 粒子画布 */
+/* Progress Bar */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent-gold), var(--accent-blue), var(--accent-rose));
+  z-index: 100; transition: width 0.1s linear;
+  box-shadow: 0 0 8px var(--glow-gold);
+}
+
+/* Particle Canvas */
 #particle-canvas {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 0;
-  pointer-events: none;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
 }
 
-/* 光晕 */
+/* Glow Orbs */
 .glow-orb {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.15;
-  z-index: 0;
-  pointer-events: none;
-  animation: orbFloat 20s ease-in-out infinite;
+  position: fixed; border-radius: 50%; filter: blur(90px);
+  opacity: 0.12; z-index: 0; pointer-events: none;
+  transition: opacity 0.8s ease;
 }
-.glow-orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, #6b8cae, transparent); top: 10%; left: -10%; }
-.glow-orb-2 { width: 300px; height: 300px; background: radial-gradient(circle, #c9a96e, transparent); bottom: 20%; right: -5%; animation-delay: -7s; }
-.glow-orb-3 { width: 250px; height: 250px; background: radial-gradient(circle, #8ab4d0, transparent); top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: -14s; }
+.glow-orb-1 { width: 450px; height: 450px; background: radial-gradient(circle, #5a7fa0, transparent); top: -5%; left: -8%; animation: orbFloat 24s ease-in-out infinite; }
+.glow-orb-2 { width: 350px; height: 350px; background: radial-gradient(circle, #b8944a, transparent); bottom: -5%; right: -6%; animation: orbFloat 22s ease-in-out infinite -8s; }
+.glow-orb-3 { width: 280px; height: 280px; background: radial-gradient(circle, #5a7fa0, transparent); top: 55%; left: 50%; transform: translate(-50%, -50%); animation: orbFloat 20s ease-in-out infinite -15s; }
 @keyframes orbFloat {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -30px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.95); }
+  25% { transform: translate(40px, -35px) scale(1.08); }
+  50% { transform: translate(-25px, 15px) scale(0.94); }
+  75% { transform: translate(-35px, -20px) scale(1.05); }
 }
 
-/* 主容器 */
+/* Main Container */
 .container {
-  position: relative;
-  z-index: 1;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 80px 30px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  position: relative; z-index: 1;
+  max-width: 820px; margin: 0 auto;
+  padding: 100px 30px 60px; min-height: 100vh;
 }
 
-/* 标题 */
-.title-section {
-  text-align: center;
-  margin-bottom: 60px;
-  animation: fadeInDown 1.5s ease-out;
+/* Hero */
+.hero {
+  text-align: center; padding: 60px 0 40px;
+  animation: heroReveal 2s ease-out;
 }
-.title {
+@keyframes heroReveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-title {
   font-family: 'Ma Shan Zheng', cursive;
-  font-size: 3.2rem;
-  color: #f0d9b5;
-  text-shadow: 0 0 30px rgba(240,217,181,0.3), 0 0 60px rgba(240,217,181,0.1);
-  letter-spacing: 8px;
-  margin-bottom: 15px;
-  animation: fadeInDown 1.5s ease-out, glow 4s ease-in-out infinite 2s;
+  font-size: clamp(2.4rem, 6vw, 3.8rem);
+  color: var(--accent-gold);
+  text-shadow: 0 0 40px var(--glow-gold), 0 0 80px rgba(212,168,83,0.15);
+  letter-spacing: 8px; line-height: 1.4;
+  animation: titleGlow 5s ease-in-out infinite 2s;
 }
-.subtitle {
+@keyframes titleGlow {
+  0%, 100% { text-shadow: 0 0 30px var(--glow-gold), 0 0 60px rgba(212,168,83,0.1); }
+  50% { text-shadow: 0 0 50px var(--glow-gold), 0 0 100px rgba(212,168,83,0.25), 0 0 150px rgba(212,168,83,0.08); }
+}
+.hero-subtitle {
   font-family: 'Noto Serif', serif;
-  font-size: 0.95rem;
-  color: #6b8cae;
-  letter-spacing: 6px;
-  font-weight: 300;
-  opacity: 0.8;
+  font-size: 0.9rem; color: var(--accent-blue); letter-spacing: 5px;
+  margin-top: 12px; opacity: 0.75; font-weight: 300;
 }
 
-/* 分隔线 */
-.divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 40px 0;
-  animation: fadeIn 2s ease-out 0.5s both;
+/* Feynman Diagram Ornament */
+.feynman-ornament {
+  display: flex; justify-content: center; margin: 50px 0 60px;
+  animation: fadeIn 2.5s ease-out 0.8s both;
 }
-.divider-line { width: 80px; height: 1px; background: linear-gradient(90deg, transparent, #c9a96e, transparent); }
-.divider-diamond { width: 8px; height: 8px; background: #c9a96e; transform: rotate(45deg); margin: 0 15px; box-shadow: 0 0 10px rgba(201,169,110,0.5); }
+.feynman-ornament svg { width: 280px; height: 60px; opacity: 0.5; }
+.feynman-ornament svg line { stroke: var(--accent-blue); stroke-width: 0.8; stroke-dasharray: 4 3; }
+.feynman-ornament svg circle { fill: var(--accent-gold); opacity: 0.7; }
 
-/* 诗歌 */
-.poem {
-  text-align: center;
-  line-height: 2.6;
-  color: #e8e0d0;
-  font-size: 1.15rem;
-  font-weight: 300;
-  letter-spacing: 2px;
+/* Stanzas */
+.stanza-wrapper {
+  margin-bottom: 60px;
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 1.2s ease-out, transform 1.2s ease-out;
 }
-.stanza {
-  margin-bottom: 35px;
-  animation: fadeInUp 1.2s ease-out both;
+.stanza-wrapper.visible {
+  opacity: 1; transform: translateY(0);
 }
-.stanza:nth-child(1) { animation-delay: 0.8s; }
-.stanza:nth-child(2) { animation-delay: 1.4s; }
-.stanza:nth-child(3) { animation-delay: 2.0s; }
-.stanza:nth-child(4) { animation-delay: 2.6s; }
-.stanza:nth-child(5) { animation-delay: 3.2s; }
-.stanza:nth-child(6) { animation-delay: 3.8s; }
-.stanza p { margin: 8px 0; }
+.stanza-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px; padding: 32px 36px;
+  backdrop-filter: blur(20px);
+  text-align: center; line-height: 2.5;
+  position: relative; overflow: hidden;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+  transition: border-color 0.6s ease, box-shadow 0.6s ease;
+}
+.stanza-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+  opacity: 0; transition: opacity 0.8s ease;
+}
+.stanza-wrapper.visible .stanza-card::before { opacity: 0.5; }
+.stanza-card:hover {
+  border-color: rgba(212,168,83,0.3);
+  box-shadow: 0 6px 40px rgba(212,168,83,0.08), 0 4px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.stanza-card p { font-size: 1.1rem; font-weight: 300; letter-spacing: 2px; margin: 6px 0; color: var(--text-primary); }
+.stanza-card .stanza-number {
+  font-family: 'Noto Serif', serif; font-size: 0.7rem; color: var(--accent-blue);
+  letter-spacing: 3px; margin-bottom: 10px; opacity: 0.5;
+}
 
-/* 公式 */
+/* Highlight Styles */
+.hl-gold { color: var(--accent-gold); font-weight: 600; cursor: pointer;
+  text-shadow: 0 0 12px var(--glow-gold);
+  border-bottom: 1px dotted rgba(212,168,83,0.3);
+  transition: all 0.3s ease; position: relative; }
+.hl-gold:hover { text-shadow: 0 0 20px var(--glow-gold), 0 0 40px rgba(212,168,83,0.3);
+  border-bottom-color: var(--accent-gold); }
+.hl-blue { color: var(--accent-blue); font-weight: 500; cursor: pointer;
+  border-bottom: 1px dotted rgba(122,175,219,0.25); transition: all 0.3s ease; }
+.hl-blue:hover { text-shadow: 0 0 15px var(--glow-blue); border-bottom-color: var(--accent-blue); }
+.hl-rose { color: var(--accent-rose); font-weight: 500; }
+
+/* Formula Box */
 .formula-box {
-  background: rgba(20, 25, 40, 0.7);
-  border: 1px solid rgba(107, 140, 174, 0.25);
-  border-radius: 12px;
-  padding: 18px 30px;
-  margin: 20px auto;
-  display: inline-block;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
-  transition: all 0.5s ease;
-  overflow-x: auto;
+  background: rgba(8, 10, 20, 0.8);
+  border: 1px solid rgba(122, 175, 219, 0.2);
+  border-radius: 10px; padding: 16px 28px; margin: 14px auto;
+  display: inline-block; backdrop-filter: blur(10px);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03);
+  transition: all 0.5s ease; overflow-x: auto;
 }
 .formula-box:hover {
-  border-color: rgba(201, 169, 110, 0.5);
-  box-shadow: 0 4px 30px rgba(201,169,110,0.15), inset 0 1px 0 rgba(255,255,255,0.08);
+  border-color: rgba(212, 168, 83, 0.4);
+  box-shadow: 0 2px 24px rgba(212,168,83,0.12), 0 2px 16px rgba(0,0,0,0.3);
 }
-.formula-box .katex { font-size: 1.15em; color: #a8c8e8; }
-.inline-formula .katex { font-size: 0.95em; color: #a8c8e8; }
+.formula-box .katex { font-size: 1.12em; color: #a0c4e0; }
+.inline-formula .katex { font-size: 0.92em; color: #a0c4e0; }
 
-/* 高亮 */
-.highlight { color: #f0d9b5; font-weight: 600; text-shadow: 0 0 15px rgba(240,217,181,0.2); }
-.highlight-blue { color: #8ab4d0; font-weight: 500; }
-.highlight-gold { color: #c9a96e; font-weight: 500; }
-
-/* 结尾 */
-.ending {
-  margin-top: 50px;
-  animation: fadeIn 2s ease-out 4.5s both;
+/* Tooltip */
+.term-tooltip {
+  position: fixed; z-index: 200; pointer-events: none;
+  background: rgba(20, 24, 40, 0.96); border: 1px solid rgba(212,168,83,0.3);
+  border-radius: 10px; padding: 12px 18px; max-width: 280px;
+  font-size: 0.85rem; line-height: 1.7; color: var(--text-secondary);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  backdrop-filter: blur(20px);
 }
-.ending .divider { margin: 30px 0; }
+.term-tooltip.active { opacity: 1; transform: translateY(0); }
+.term-tooltip .tt-title { color: var(--accent-gold); font-weight: 600; margin-bottom: 4px; font-size: 0.9rem; }
+
+/* Climax Section */
+.climax-section {
+  text-align: center; padding: 80px 0 40px;
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 1.5s ease, transform 1.5s ease;
+}
+.climax-section.visible { opacity: 1; transform: translateY(0); }
+.climax-name {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: clamp(2rem, 5vw, 3rem); color: var(--accent-rose);
+  text-shadow: 0 0 30px rgba(201,122,138,0.35); margin-bottom: 20px;
+  animation: climaxPulse 3s ease-in-out infinite;
+}
+@keyframes climaxPulse {
+  0%, 100% { text-shadow: 0 0 25px rgba(201,122,138,0.3); }
+  50% { text-shadow: 0 0 50px rgba(201,122,138,0.6), 0 0 80px rgba(201,122,138,0.2); }
+}
+.climax-line { font-size: 1.2rem; line-height: 2.5; color: var(--text-secondary); }
+.heart-btn {
+  margin-top: 36px; padding: 14px 40px;
+  background: transparent; border: 1px solid rgba(201,122,138,0.4);
+  border-radius: 50px; color: var(--accent-rose);
+  font-family: 'Noto Serif SC', serif; font-size: 1rem; letter-spacing: 3px;
+  cursor: pointer; transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
+}
+.heart-btn:hover {
+  background: rgba(201,122,138,0.12); border-color: var(--accent-rose);
+  box-shadow: 0 0 30px rgba(201,122,138,0.2); transform: scale(1.03);
+}
+.heart-btn.hearted {
+  border-color: var(--accent-rose); background: rgba(201,122,138,0.18);
+  pointer-events: none;
+}
+
+/* Signature */
+.signature-section {
+  text-align: center; padding: 50px 0 20px;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 1s ease 0.3s, transform 1s ease 0.3s;
+}
+.signature-section.visible { opacity: 1; transform: translateY(0); }
 .signature {
   font-family: 'Ma Shan Zheng', cursive;
-  font-size: 1.8rem;
-  color: #c9a96e;
-  text-align: center;
-  letter-spacing: 4px;
-  margin-top: 20px;
+  font-size: 1.8rem; color: var(--accent-gold); letter-spacing: 4px;
 }
-.footer-deco {
-  text-align: center;
-  margin-top: 40px;
-  opacity: 0.4;
-  animation: fadeIn 2s ease-out 5s both;
-}
-.footer-deco svg { width: 40px; height: 40px; fill: #c9a96e; }
 
-/* 动画 */
-@keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+/* Footer */
+.footer-section {
+  text-align: center; padding: 40px 0 60px;
+  opacity: 0; animation: fadeIn 2s ease-out 2s both;
+}
+.footer-actions {
+  display: flex; justify-content: center; gap: 16px; margin-bottom: 30px; flex-wrap: wrap;
+}
+.footer-btn {
+  padding: 10px 24px; border-radius: 50px; font-size: 0.85rem; letter-spacing: 2px;
+  cursor: pointer; transition: all 0.35s ease; font-family: 'Noto Serif SC', serif;
+  background: transparent; border: 1px solid rgba(122,175,219,0.25); color: var(--text-secondary);
+  backdrop-filter: blur(10px);
+}
+.footer-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); background: rgba(122,175,219,0.08); }
+.footer-btn.copied { border-color: var(--accent-gold); color: var(--accent-gold); }
+.footer-deco { opacity: 0.3; margin-top: 20px; }
+.footer-deco svg { width: 36px; height: 36px; fill: var(--accent-gold); }
+.footer-credit { font-size: 0.75rem; color: var(--text-secondary); opacity: 0.4; margin-top: 16px; letter-spacing: 1px; }
+
+/* Divider */
+.divider-set {
+  display: flex; align-items: center; justify-content: center;
+  margin: 30px 0; gap: 0;
+}
+.divider-line { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--accent-gold), transparent); }
+.divider-dot { width: 5px; height: 5px; background: var(--accent-gold); border-radius: 50%; margin: 0 12px;
+  box-shadow: 0 0 8px var(--glow-gold); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: rgba(20,24,40,0.95); border: 1px solid var(--accent-gold);
+  border-radius: 50px; padding: 12px 28px; color: var(--accent-gold);
+  font-size: 0.9rem; letter-spacing: 2px; z-index: 300; opacity: 0;
+  transition: all 0.4s ease; pointer-events: none;
+  backdrop-filter: blur(20px);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Animations */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes glow { 0%, 100% { text-shadow: 0 0 20px rgba(240,217,181,0.3); } 50% { text-shadow: 0 0 40px rgba(240,217,181,0.6), 0 0 60px rgba(240,217,181,0.2); } }
 
-/* 响应式 */
-@media (max-width: 600px) {
-  .title { font-size: 2.2rem; letter-spacing: 4px; }
-  .poem { font-size: 1rem; line-height: 2.4; }
-  .container { padding: 50px 20px; }
-  .formula-box { padding: 14px 20px; }
-  .formula-box .katex { font-size: 1em; }
+/* Responsive */
+@media (max-width: 768px) {
+  .container { padding: 70px 18px 40px; }
+  .stanza-card { padding: 24px 20px; line-height: 2.3; }
+  .stanza-card p { font-size: 0.98rem; }
+  .hero { padding: 30px 0 20px; }
+  .feynman-ornament svg { width: 200px; }
+  .formula-box { padding: 12px 18px; }
+  .formula-box .katex { font-size: 0.95em; }
+  .footer-actions { gap: 10px; }
+  .footer-btn { padding: 8px 18px; font-size: 0.78rem; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 50px 14px 30px; }
+  .hero-title { letter-spacing: 4px; }
+  .hero-subtitle { letter-spacing: 3px; font-size: 0.78rem; }
+  .stanza-card { padding: 20px 16px; line-height: 2.2; border-radius: 12px; }
+  .stanza-card p { font-size: 0.9rem; letter-spacing: 1px; }
+  .stanza-wrapper { margin-bottom: 40px; }
+  .climax-section { padding: 50px 0 20px; }
 }
 </style>
 </head>
@@ -183,130 +309,368 @@ body {
 <div class="glow-orb glow-orb-1"></div>
 <div class="glow-orb glow-orb-2"></div>
 <div class="glow-orb glow-orb-3"></div>
+<div class="progress-bar" id="progress-bar"></div>
 
-<div class="container">
-  <div class="title-section">
-    <h1 class="title">张依婷的规范场论</h1>
-    <p class="subtitle">A LOVE POEM IN GAUGE THEORY</p>
+<div class="container" id="main-container">
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1 class="hero-title">张依婷的规范场论</h1>
+    <p class="hero-subtitle">GAUGE THEORY OF LOVE</p>
+  </section>
+
+  <!-- Feynman Diagram -->
+  <div class="feynman-ornament">
+    <svg viewBox="0 0 280 60" xmlns="http://www.w3.org/2000/svg">
+      <line x1="30" y1="30" x2="95" y2="30"/>
+      <line x1="95" y1="30" x2="185" y2="30"/>
+      <line x1="185" y1="30" x2="250" y2="30"/>
+      <circle cx="95" cy="30" r="4"/>
+      <circle cx="185" cy="30" r="4"/>
+      <path d="M95 30 Q 140 -10 185 30" fill="none" stroke="#d4a853" stroke-width="0.6" stroke-dasharray="3 4"/>
+      <path d="M95 30 Q 140 70 185 30" fill="none" stroke="#d4a853" stroke-width="0.6" stroke-dasharray="3 4"/>
+      <text x="140" y="16" fill="#d4a853" font-size="8" text-anchor="middle" font-family="serif" font-style="italic" opacity="0.6">g</text>
+      <text x="140" y="52" fill="#d4a853" font-size="8" text-anchor="middle" font-family="serif" font-style="italic" opacity="0.6">g</text>
+      <text x="30" y="20" fill="#7aafdb" font-size="7" text-anchor="middle" opacity="0.5">&psi;</text>
+      <text x="250" y="20" fill="#7aafdb" font-size="7" text-anchor="middle" opacity="0.5">&psi;</text>
+    </svg>
   </div>
 
-  <div class="divider"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
+  <div class="divider-set"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
 
-  <div class="poem">
-    <div class="stanza">
-      <p>在遇到你之前，我的<span class="highlight">规范场</span>无质量，</p>
-      <p>所有粒子都以<span class="highlight-blue">光速</span>疾驰，没有停驻的理由。</p>
-      <p>直到你张开<span class="highlight">希格斯场</span>的势能</p>
+  <!-- Stanza 1 -->
+  <div class="stanza-wrapper" data-stanza="1">
+    <div class="stanza-card">
+      <div class="stanza-number">I &middot; 对称性自发破缺</div>
+      <p>在遇到你之前，我的<span class="hl-gold" data-term="gauge-field">规范场</span>无质量，</p>
+      <p>所有粒子都以<span class="hl-blue" data-term="light-speed">光速</span>疾驰，没有停驻的理由。</p>
+      <p>直到你张开<span class="hl-gold" data-term="higgs-field">希格斯场</span>的势能</p>
       <div class="formula-box" id="formula-v"></div>
-      <p>对称性突然<span class="highlight-gold">自发破缺</span>了——</p>
+      <p>对称性突然<span class="hl-gold" data-term="symmetry-breaking">自发破缺</span>了——</p>
       <p>真空期待值不再为零 <span class="inline-formula" id="formula-vev"></span>。</p>
     </div>
+  </div>
 
-    <div class="stanza">
-      <p>你依稀是那个<span class="highlight">非零的基态</span>选择，</p>
-      <p>让我咽下<span class="highlight-blue">戈德斯通玻色子</span>，</p>
-      <p>骤然获得了<span class="highlight">惯性</span>、<span class="highlight">重量</span>，以及思念的静能 <span class="inline-formula" id="formula-emc"></span>。</p>
-    </div>
-
-    <div class="stanza">
-      <p><span class="highlight-gold">婷婷</span>于二重态的唯一方向，</p>
-      <p>你破缺了我全部的孤立对称群 <span class="inline-formula" id="formula-su2"></span>。</p>
-    </div>
-
-    <div class="stanza">
-      <p>于是，传递弱作用的<span class="highlight-blue">中间玻色子</span>变得沉重，</p>
-      <p>一如我<span class="highlight">沉甸甸的心跳</span>。</p>
-    </div>
-
-    <div class="stanza">
-      <p>我们之间，从此有了<span class="highlight">不变质量</span> <span class="inline-formula" id="formula-mass"></span>，</p>
-      <p>在每一次<span class="highlight-gold">规范变换</span>下都不再虚无。</p>
-    </div>
-
-    <div class="stanza">
-      <p><span class="highlight" style="font-size:1.3rem">张依婷，</span></p>
-      <p>你就是我的<span class="highlight">希格斯机制</span>——</p>
-      <p>让原本冰冷的<span class="highlight-blue">量子涨落</span>，</p>
-      <p>凝结出爱情的<span class="highlight-gold">不变质量</span>。</p>
+  <!-- Stanza 2 -->
+  <div class="stanza-wrapper" data-stanza="2">
+    <div class="stanza-card">
+      <div class="stanza-number">II &middot; 戈德斯通模式</div>
+      <p>你依稀是那个<span class="hl-gold" data-term="ground-state">非零的基态</span>选择，</p>
+      <p>让我咽下<span class="hl-blue" data-term="goldstone">戈德斯通玻色子</span>，</p>
+      <p>骤然获得了<span class="hl-gold" data-term="inertia">惯性</span>、<span class="hl-gold" data-term="weight">重量</span>，以及思念的静能 <span class="inline-formula" id="formula-emc"></span>。</p>
     </div>
   </div>
 
-  <div class="ending">
-    <div class="divider"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
+  <!-- Stanza 3 -->
+  <div class="stanza-wrapper" data-stanza="3">
+    <div class="stanza-card">
+      <div class="stanza-number">III &middot; 规范群破缺</div>
+      <p><span class="hl-rose">婷婷</span>于二重态的唯一方向，</p>
+      <p>你破缺了我全部的孤立对称群 <span class="inline-formula" id="formula-su2"></span>。</p>
+    </div>
+  </div>
+
+  <!-- Stanza 4 -->
+  <div class="stanza-wrapper" data-stanza="4">
+    <div class="stanza-card">
+      <div class="stanza-number">IV &middot; 质量生成</div>
+      <p>于是，传递弱作用的<span class="hl-blue" data-term="w-boson">中间玻色子</span>变得沉重，</p>
+      <p>一如我<span class="hl-gold" data-term="heartbeat">沉甸甸的心跳</span>。</p>
+    </div>
+  </div>
+
+  <!-- Stanza 5 -->
+  <div class="stanza-wrapper" data-stanza="5">
+    <div class="stanza-card">
+      <div class="stanza-number">V &middot; 不变质量</div>
+      <p>我们之间，从此有了<span class="hl-gold" data-term="invariant-mass">不变质量</span> <span class="inline-formula" id="formula-mass"></span>，</p>
+      <p>在每一次<span class="hl-blue" data-term="gauge-transform">规范变换</span>下都不再虚无。</p>
+    </div>
+  </div>
+
+  <!-- Stanza 6: Climax -->
+  <div class="stanza-wrapper" data-stanza="6">
+    <div class="stanza-card" style="border-color: rgba(201,122,138,0.2);">
+      <div class="stanza-number">VI &middot; 希格斯机制</div>
+      <p><span class="hl-rose" style="font-size:1.25rem">张依婷，</span></p>
+      <p>你就是我的<span class="hl-gold" data-term="higgs-mechanism">希格斯机制</span>——</p>
+      <p>让原本冰冷的<span class="hl-blue" data-term="quantum-fluctuation">量子涨落</span>，</p>
+      <p>凝结出爱情的<span class="hl-rose">不变质量</span>。</p>
+    </div>
+  </div>
+
+  <!-- Heart Button -->
+  <div class="climax-section" id="climax-section">
+    <div class="climax-name">&starf;</div>
+    <p class="climax-line">点击下方 &middot; 让粒子凝聚为心</p>
+    <button class="heart-btn" id="heart-btn" onclick="triggerHeart()">&hearts; 对称性破缺 &hearts;</button>
+  </div>
+
+  <!-- Signature -->
+  <div class="signature-section" id="signature-section">
+    <div class="divider-set"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
     <p class="signature">献给张依婷</p>
   </div>
 
-  <div class="footer-deco">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-    </svg>
+  <!-- Footer -->
+  <div class="footer-section">
+    <div class="footer-actions">
+      <button class="footer-btn" onclick="copyPoem()" id="copy-btn">复制诗句</button>
+      <button class="footer-btn" onclick="sharePoem()">分享链接</button>
+      <button class="footer-btn" onclick="toggleParticles()" id="particle-btn">粒子效果</button>
+    </div>
+    <div class="footer-deco">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+    </div>
+    <p class="footer-credit">杨-米尔斯规范场论 &middot; 希格斯机制 &middot; 献给婷婷</p>
   </div>
+
 </div>
 
-<script>
-// KaTeX 公式渲染
-const kopts = { throwOnError: false, trust: true };
-document.getElementById('formula-v').innerHTML =
-  katex.renderToString('V(\\phi)=\\mu^2\\phi^\\dagger\\phi+\\lambda(\\phi^\\dagger\\phi)^2,', { ...kopts, displayMode: true });
-document.getElementById('formula-vev').innerHTML =
-  katex.renderToString('\\langle\\phi\\rangle = v', kopts);
-document.getElementById('formula-emc').innerHTML =
-  katex.renderToString('E = mc^2', kopts);
-document.getElementById('formula-su2').innerHTML =
-  katex.renderToString('SU(2)_L \\times U(1)_Y', kopts);
-document.getElementById('formula-mass').innerHTML =
-  katex.renderToString('\\sqrt{p^\\mu p_\\mu}', kopts);
+<!-- Tooltip -->
+<div class="term-tooltip" id="term-tooltip"></div>
 
-// 粒子背景
-const canvas = document.getElementById('particle-canvas');
-const ctx = canvas.getContext('2d');
-let W, H, particles = [], mouse = { x: null, y: null };
-const COUNT = 80, LINK_DIST = 120, MOUSE_DIST = 200;
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// KaTeX
+var kopts = { throwOnError: false, trust: true };
+document.getElementById('formula-v').innerHTML = katex.renderToString(
+  'V(\\phi)=\\mu^2\\phi^\\dagger\\phi+\\lambda(\\phi^\\dagger\\phi)^2', Object.assign({}, kopts, {displayMode: true}));
+document.getElementById('formula-vev').innerHTML = katex.renderToString('\\langle\\phi\\rangle \\neq 0', kopts);
+document.getElementById('formula-emc').innerHTML = katex.renderToString('E = mc^2', kopts);
+document.getElementById('formula-su2').innerHTML = katex.renderToString('SU(2)_L \\times U(1)_Y', kopts);
+document.getElementById('formula-mass').innerHTML = katex.renderToString('\\sqrt{p^\\mu p_\\mu} \\neq 0', kopts);
+
+// Physics Glossary
+var glossary = {
+  'gauge-field': ['规范场', '传递相互作用的场。标准模型中，胶子传递强相互作用，W/Z玻色子传递弱相互作用，光子传递电磁力。这里的规范场无质量，就像遇见你之前的我——没有锚点，无处停驻。'],
+  'light-speed': ['光速', 'c \u2248 3\u00d710\u2078 m/s。无质量粒子只能以光速运动，永远无法静止。就像单身时那种无法停下的漂泊感。'],
+  'higgs-field': ['希格斯场', '遍布全宇宙的标量场，粒子与它相互作用而获得质量。你就是遍布我宇宙的希格斯场，让我从无质量的漂泊中获得了存在的重量。'],
+  'symmetry-breaking': ['自发对称破缺', '物理系统的基态比拉格朗日量拥有更低的对称性。就像圆桌中央的酒杯倒向某一侧，选择了一个方向——你的出现，就是我对称性的自发破缺。'],
+  'ground-state': ['非零基态', '量子场论中能量最低的状态。希格斯场的基态非零（v\u2248246 GeV），真空并非真的空。你对我的意义，也不是零。'],
+  'goldstone': ['戈德斯通玻色子', '连续对称性自发破缺时产生的无质量玻色子。在希格斯机制中，它们被规范玻色子"吃掉"，使后者获得质量。我咽下对你的思念，于是获得了沉甸甸的存在感。'],
+  'inertia': ['惯性', '质量的定义之一：抵抗运动状态改变的能力。遇见你之后，我不再随波逐流——我的轨迹有了方向，有了不愿改变的惯性。'],
+  'weight': ['重量', '引力场中质量的表现。但在这里，它是思念的重量——沉甸甸的，让人无法忽视。'],
+  'w-boson': ['中间玻色子', 'W\u207a、W\u207b、Z\u2070玻色子，传递弱相互作用。希格斯机制前它们无质量，机制后获得约80-90 GeV/c\u00b2的质量。变得沉重的玻色子，就是我的心跳。'],
+  'heartbeat': ['心跳', '约60-100次/分钟，但在此刻，每一次都像W玻色子一样沉重而有力。'],
+  'invariant-mass': ['不变质量', '\u221Ap\u03bcp\u03bc，洛伦兹不变量。无论参考系如何变换，这个值始终不变。就像真正的爱情，在所有的规范变换下永不变。'],
+  'gauge-transform': ['规范变换', '场在每一点独立的相位旋转。物理规律在规范变换下不变，这是现代物理学的基石。而我们的关系，在时间的每一次变换下，依然不变。'],
+  'higgs-mechanism': ['希格斯机制', '通过自发对称破缺赋予粒子质量的机制，2013年诺贝尔物理学奖。你就是我的希格斯机制——让虚无的量子涨落，凝聚出爱情的不变质量。'],
+  'quantum-fluctuation': ['量子涨落', '量子场在真空中的随机起伏。海森堡不确定性原理告诉我们，真空不是"无"，而是沸腾的涨落之海。在遇见你之前，我的世界只是毫无意义的量子涨落。'],
+};
+
+// Tooltip System
+var tooltip = document.getElementById('term-tooltip');
+var tooltipTimer;
+
+document.querySelectorAll('[data-term]').forEach(function(el) {
+  el.addEventListener('mouseenter', function(e) {
+    var term = glossary[el.dataset.term];
+    if (!term) return;
+    tooltip.innerHTML = '<div class="tt-title">' + term[0] + '</div>' + term[1];
+    positionTooltip(e);
+    tooltip.classList.add('active');
+  });
+  el.addEventListener('mousemove', function(e) { positionTooltip(e); });
+  el.addEventListener('mouseleave', function() {
+    tooltipTimer = setTimeout(function() { tooltip.classList.remove('active'); }, 150);
+  });
+  el.addEventListener('click', function(e) {
+    var term = glossary[el.dataset.term];
+    if (!term) return;
+    tooltip.innerHTML = '<div class="tt-title">' + term[0] + '</div>' + term[1];
+    positionTooltip(e);
+    tooltip.classList.add('active');
+    clearTimeout(tooltipTimer);
+    setTimeout(function() { tooltip.classList.remove('active'); }, 4000);
+  });
+});
+
+tooltip.addEventListener('mouseenter', function() { clearTimeout(tooltipTimer); tooltip.classList.add('active'); });
+tooltip.addEventListener('mouseleave', function() { tooltip.classList.remove('active'); });
+
+function positionTooltip(e) {
+  var x = e.clientX + 16, y = e.clientY - 10;
+  var tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+  if (x + tw > window.innerWidth - 16) x = e.clientX - tw - 16;
+  if (y + th > window.innerHeight - 16) y = e.clientY - th - 10;
+  if (y < 10) y = 10;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+}
+
+// Scroll Animations
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.2, rootMargin: '0px 0px -60px 0px' });
+
+document.querySelectorAll('.stanza-wrapper, .climax-section, .signature-section').forEach(function(el) {
+  observer.observe(el);
+});
+
+// Progress Bar
+window.addEventListener('scroll', function() {
+  var scrollTop = window.scrollY;
+  var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
+});
+
+// Particle System
+var canvas = document.getElementById('particle-canvas');
+var ctx = canvas.getContext('2d');
+var W, H, particles = [], mouse = { x: null, y: null };
+var COUNT = 100, LINK_DIST = 130, MOUSE_DIST = 180;
+var heartMode = false, heartProgress = 0;
 
 function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize);
-window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-window.addEventListener('mouseleave', () => { mouse.x = mouse.y = null; });
+window.addEventListener('mousemove', function(e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+window.addEventListener('mouseleave', function() { mouse.x = mouse.y = null; });
 resize();
 
-class Particle {
-  constructor() {
-    this.x = Math.random() * W; this.y = Math.random() * H;
-    this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
-    this.r = Math.random() * 2 + 0.5; this.o = Math.random() * 0.5 + 0.2;
-  }
-  update() {
-    this.x += this.vx; this.y += this.vy;
-    if (this.x < 0 || this.x > W) this.vx *= -1;
-    if (this.y < 0 || this.y > H) this.vy *= -1;
-    if (mouse.x !== null) {
-      const dx = mouse.x - this.x, dy = mouse.y - this.y;
-      const d = Math.sqrt(dx * dx + dy * dy);
-      if (d < MOUSE_DIST) { const f = (MOUSE_DIST - d) / MOUSE_DIST; this.vx += (dx / d) * f * 0.02; this.vy += (dy / d) * f * 0.02; }
+function Particle() {
+  this.reset = function() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * 0.6;
+    this.vy = (Math.random() - 0.5) * 0.6;
+    this.r = Math.random() * 2.2 + 0.5;
+    this.o = Math.random() * 0.5 + 0.2;
+    this.baseR = this.r;
+    this.angle = Math.random() * Math.PI * 2;
+    this.orbitR = 60 + Math.random() * 120;
+    this.orbitSpeed = 0.005 + Math.random() * 0.015;
+  };
+  this.reset();
+
+  this.update = function() {
+    if (heartMode) {
+      var t = this.angle + heartProgress * this.orbitSpeed * 100;
+      var scale = this.orbitR / 16;
+      var hx = 16 * Math.pow(Math.sin(t), 3);
+      var hy = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+      var targetX = W/2 + hx * scale * 0.8;
+      var targetY = H/2 + hy * scale * 0.8;
+      this.x += (targetX - this.x) * 0.03;
+      this.y += (targetY - this.y) * 0.03;
+      this.r = this.baseR * (0.7 + 0.3 * heartProgress);
+      this.o = Math.min(1, this.o + 0.002);
+    } else {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > W) this.vx *= -1;
+      if (this.y < 0 || this.y > H) this.vy *= -1;
+      if (mouse.x !== null) {
+        var dx = mouse.x - this.x, dy = mouse.y - this.y;
+        var d = Math.sqrt(dx*dx + dy*dy);
+        if (d < MOUSE_DIST) { var f = (MOUSE_DIST-d)/MOUSE_DIST; this.vx += (dx/d)*f*0.02; this.vy += (dy/d)*f*0.02; }
+      }
+      var s = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+      if (s > 1.5) { this.vx = (this.vx/s)*1.5; this.vy = (this.vy/s)*1.5; }
     }
-    const s = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-    if (s > 1.5) { this.vx = (this.vx / s) * 1.5; this.vy = (this.vy / s) * 1.5; }
-  }
-  draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2); ctx.fillStyle = `rgba(201,169,110,${this.o})`; ctx.fill(); }
+  };
+
+  this.draw = function() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+    var color = heartMode ? 'rgba(201,122,138,' + this.o + ')' : 'rgba(212,168,83,' + this.o + ')';
+    ctx.fillStyle = color;
+    ctx.fill();
+  };
 }
 
-for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+for (var i = 0; i < COUNT; i++) particles.push(new Particle());
 
 (function loop() {
   ctx.clearRect(0, 0, W, H);
-  particles.forEach(p => { p.update(); p.draw(); });
-  for (let i = 0; i < particles.length; i++) {
-    for (let j = i + 1; j < particles.length; j++) {
-      const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
-      const d = Math.sqrt(dx * dx + dy * dy);
-      if (d < LINK_DIST) {
+  for (var i = 0; i < particles.length; i++) { particles[i].update(); particles[i].draw(); }
+  for (var i = 0; i < particles.length; i++) {
+    for (var j = i+1; j < particles.length; j++) {
+      var dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+      var d = Math.sqrt(dx*dx + dy*dy);
+      var maxDist = heartMode ? LINK_DIST * 1.5 : LINK_DIST;
+      if (d < maxDist) {
         ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-        ctx.strokeStyle = `rgba(107,140,174,${(1 - d / LINK_DIST) * 0.15})`; ctx.lineWidth = 0.5; ctx.stroke();
+        var alpha = (1 - d/maxDist) * (heartMode ? 0.2 : 0.12);
+        var color = heartMode ? 'rgba(201,122,138,' + alpha + ')' : 'rgba(122,175,219,' + alpha + ')';
+        ctx.strokeStyle = color; ctx.lineWidth = 0.5; ctx.stroke();
       }
     }
   }
+  if (heartMode && heartProgress < 1) heartProgress += 0.005;
   requestAnimationFrame(loop);
 })();
+
+// Heart Trigger
+var heartActive = false;
+function triggerHeart() {
+  if (heartActive) return;
+  heartActive = true;
+  heartMode = true;
+  heartProgress = 0;
+  var btn = document.getElementById('heart-btn');
+  btn.classList.add('hearted');
+  btn.innerHTML = '&hearts; 爱是不变质量 &hearts;';
+
+  document.querySelectorAll('.glow-orb').forEach(function(orb) {
+    orb.style.opacity = '0.22';
+    orb.style.transition = 'opacity 1.5s ease';
+  });
+  setTimeout(function() {
+    document.querySelectorAll('.glow-orb').forEach(function(orb) {
+      orb.style.opacity = '0.12';
+    });
+  }, 3000);
+
+  showToast('对称性已破缺 \u00b7 粒子凝聚为心');
+}
+
+// Copy Poem
+function copyPoem() {
+  var poem = '\u5f20\u4f9d\u5a77\u7684\u89c4\u8303\u573a\u8bba\n\n\u5728\u9047\u5230\u4f60\u4e4b\u524d\uff0c\u6211\u7684\u89c4\u8303\u573a\u65e0\u8d28\u91cf\uff0c\n\u6240\u6709\u7c92\u5b50\u90fd\u4ee5\u5149\u901f\u96b6\u9a70\uff0c\u6ca1\u6709\u505c\u9a7b\u7684\u7406\u7531\u3002\n\u76f4\u5230\u4f60\u5f20\u5f00\u5e0c\u683c\u65af\u573a\u7684\u52bf\u80fd\nV(\u03c6)=\u03bc\u00b2\u03c6\u2020\u03c6+\u03bb(\u03c6\u2020\u03c6)\u00b2\n\u5bf9\u79f0\u6027\u7a81\u7136\u81ea\u53d1\u7834\u7f3a\u4e86\u2014\u2014\n\u771f\u7a7a\u671f\u5f85\u503c\u4e0d\u518d\u4e3a\u96f6\u3008\u03c6\u3009\u22600\u3002\n\n\u4f60\u4f9d\u7a00\u662f\u90a3\u4e2a\u975e\u96f6\u7684\u57fa\u6001\u9009\u62e9\uff0c\n\u8ba9\u6211\u54bd\u4e0b\u6208\u5fb7\u65af\u901a\u73bb\u8272\u5b50\uff0c\n\u9aa4\u7136\u83b7\u5f97\u4e86\u60ef\u6027\u3001\u91cd\u91cf\uff0c\u4ee5\u53ca\u601d\u5ff5\u7684\u9759\u80fd E=mc\u00b2\u3002\n\n\u5a77\u5a77\u4e8e\u4e8c\u91cd\u6001\u7684\u552f\u4e00\u65b9\u5411\uff0c\n\u4f60\u7834\u7f3a\u4e86\u6211\u5168\u90e8\u7684\u5b64\u7acb\u5bf9\u79f0\u7fa4 SU(2)L\u00d7U(1)Y\u3002\n\n\u4e8e\u662f\uff0c\u4f20\u9012\u5f31\u4f5c\u7528\u7684\u4e2d\u95f4\u73bb\u8272\u5b50\u53d8\u5f97\u6c89\u91cd\uff0c\n\u4e00\u5982\u6211\u6c89\u7538\u7538\u7684\u5fc3\u8df3\u3002\n\n\u6211\u4eec\u4e4b\u95f4\uff0c\u4ece\u6b64\u6709\u4e86\u4e0d\u53d8\u8d28\u91cf\u221ap\u03bcp\u03bc\u22600\uff0c\n\u5728\u6bcf\u4e00\u6b21\u89c4\u8303\u53d8\u6362\u4e0b\u90fd\u4e0d\u518d\u865a\u65e0\u3002\n\n\u5f20\u4f9d\u5a77\uff0c\n\u4f60\u5c31\u662f\u6211\u7684\u5e0c\u683c\u65af\u673a\u5236\u2014\u2014\n\u8ba9\u539f\u672c\u51b0\u51b7\u7684\u91cf\u5b50\u6da8\u843d\uff0c\n\u51dd\u7ed3\u51fa\u7231\u60c5\u7684\u4e0d\u53d8\u8d28\u91cf\u3002\n\n\u2014\u2014 \u732e\u7ed9\u5f20\u4f9d\u5a77';
+  navigator.clipboard.writeText(poem).then(function() {
+    var btn = document.getElementById('copy-btn');
+    btn.classList.add('copied');
+    btn.textContent = '\u2705 \u5df2\u590d\u5236';
+    showToast('\u8bd7\u53e5\u5df2\u590d\u5236\u5230\u526a\u8d34\u677f');
+    setTimeout(function() { btn.classList.remove('copied'); btn.textContent = '\u590d\u5236\u8bd7\u53e5'; }, 2000);
+  });
+}
+
+// Share
+function sharePoem() {
+  var url = window.location.href;
+  var text = '\u5f20\u4f9d\u5a77\u7684\u89c4\u8303\u573a\u8bba \u2014 \u4e00\u9996\u7528\u5e0c\u683c\u65af\u673a\u5236\u5199\u7684\u60c5\u8bd7';
+  if (navigator.share) {
+    navigator.share({ title: text, url: url }).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(url).then(function() { showToast('\u94fe\u63a5\u5df2\u590d\u5236'); });
+  }
+}
+
+// Toggle Particles
+var particlesOn = true;
+function toggleParticles() {
+  particlesOn = !particlesOn;
+  canvas.style.display = particlesOn ? 'block' : 'none';
+  document.getElementById('particle-btn').textContent = particlesOn ? '粒子效果' : '\u7c92\u5b50\u5df2\u5173';
+}
+
+// Toast
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
 </script>
 </body>
 </html>
