@@ -395,93 +395,46 @@ function ParticleItem() {
    ═════════════════════════════════════════════ */
 
 
-function StarItem() {
-  this.x = Math.random()*HW;
-  this.y = Math.random()*HH;
-  this.size = rand(0.4, 2.2);
-  this.baseOp = rand(0.2, 0.8);
-  this.twinkleS = rand(0.008, 0.03);
-  this.twinkleO = Math.random()*Math.PI*2;
-  this.constellation = false;
-}
-
-function SparkleItem(x, y) {
-  this.x = x + rand(-25,25);
-  this.y = y + rand(-25,25);
-  this.size = rand(0.8, 2.5);
-  this.life = 0;
-  this.maxLife = rand(25, 50);
-  this.sx = rand(-0.4, 0.4);
-  this.sy = rand(-0.4, 0.4);
-}
-
-function heartPoints(count, cx, cy, scale) {
-  var pts = [];
-  for (var i = 0; i < count; i++) {
-    var t = (i/count)*Math.PI*2;
-    var x = 16*Math.pow(Math.sin(t),3);
-    var y = -(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
-    pts.push({ x: cx + x*scale, y: cy + y*scale });
+/* ═════════════════════════════════════════════
+   Heart Mode — particle convergence
+   ═════════════════════════════════════════════ */
+// Particles converge to heart curve; heartProgress animates 0→1
+var heartAnimRAF = null;
+function animateHeartProgress() {
+  if (!state.heartActive) return;
+  state.heartProgress = Math.min(1, state.heartProgress + 0.004);
+  if (state.heartProgress < 1) {
+    heartAnimRAF = requestAnimationFrame(animateHeartProgress);
   }
-  return pts;
-}
-
-function initStars() {
-  hResize();
-  state.stars = [];
-  for (var i = 0; i < 200; i++) state.stars.push(new StarItem());
-}
-
-function matchStarsToHeart() {
-  var cx = HW/2, cy = HH/2 - 20;
-  var scale = Math.min(HW, HH)*0.011;
-  var hpts = heartPoints(32, cx, cy, scale);
-  state.constellationStars = [];
-  hpts.forEach(function(hp) {
-    var best = null, bestD = Infinity;
-    state.stars.forEach(function(s) {
-      var d = Math.hypot(s.x - hp.x, s.y - hp.y);
-      if (d < bestD) { bestD = d; best = s; }
-    });
-    if (best) { best.constellation = true; state.constellationStars.push(best); }
-  });
 }
 
 /* ═════════════════════════════════════════════
-   Heart Trigger — dissolve paper, reveal heart
+   Heart Trigger — dissolve paper, particles converge
    ═════════════════════════════════════════════ */
 function triggerHeart() {
   if (state.heartActive) return;
   state.heartActive = true;
-  state.conProgress = 0;
-  state.heartTime = 0;
+  state.heartProgress = 0;
 
   var btn = document.getElementById('heart-btn');
   btn.classList.add('triggered');
   btn.innerHTML = '♥ 爱是不变质量 ♥';
 
-  // Step 1: Init star field
-  initStars();
+  // Raise particle canvas above everything
+  pCanvas.style.zIndex = '998';
 
-  // Step 2: Start dissolving the paper and container
+  // Start dissolving the paper
   document.getElementById('poem-paper').style.opacity = '0';
   document.getElementById('poem-paper').style.transform = 'scale(0.97)';
   document.getElementById('main-container').classList.add('dissolving');
 
-  // Step 3: After dissolve, show heart overlay and draw constellation
+  // Animate heartProgress 0→1 over ~3s
+  heartAnimRAF = requestAnimationFrame(animateHeartProgress);
+
+  // After dissolve, show the overlay message
   setTimeout(function() {
     document.getElementById('heart-overlay').classList.add('active');
-    document.getElementById('heart-canvas').classList.remove('hidden');
-
-    matchStarsToHeart();
-    var startT = Date.now(), dur = 3000;
-    function anim() {
-      var elapsed = Date.now() - startT;
-      state.conProgress = Math.min(elapsed/dur, 1);
-      if (state.conProgress < 1) requestAnimationFrame(anim);
-    }
-    anim();
-  }, 1400);
+  }, 1600);
 }
 
 /* Heart animation uses the main particle loop — particles converge to heart equation in update() above */
@@ -785,10 +738,9 @@ function showToast(msg) {
    Init
    ═════════════════════════════════════════════ */
 pResize();
-for (var i = 0; i < 80; i++) particles.push(new ParticleItem());
-initStars();
+for (var i = 0; i < 120; i++) particles.push(new ParticleItem());
 
-window.addEventListener('resize', function() { pResize(); if (state.heartActive) hResize(); });
+window.addEventListener('resize', function() { pResize(); });
 </script>
 </body>
 </html>
